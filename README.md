@@ -16,7 +16,7 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC.
 # ./data
 * Data that was created from the ./scripts directory OR was inhereted by another source (cleaned Penticton weather)
 * ``` hardiness_cleaned.csv ``` should be treated as immutable. Do not write to this file unless tested well in the '/scripts/hardiness_cleaning_X.py' files
-* ``` hardiness_delta_and_weather.csv ``` contains all the current weather parameters comparing to hardiness and the change in hardiness between timesteps
+* ``` model_inputs.csv ``` contains all the current weather parameters comparing to hardiness and the change in hardiness between timesteps
 * ``` penticton_weather_data.csv ``` is the inhereted source for weather data from the Penticton Weather Station. TODO: clean the uncleaned penticton weather data to get wind and other metrics that were left out of this data
 * ``` penticton_weather_data_v1.csv ``` used this for some reason in the interactive plot in ./viz so I decided to keep it instead of dealing with it :)
 
