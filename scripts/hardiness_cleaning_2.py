@@ -30,4 +30,4 @@ sites.value_counts()
 data["site"] = sites
 data["variety"] = varieties
 
-data.to_csv("../data/hardiness_cleaned_1.csv")
+data.to_csv("../data/hardiness_cleaned.csv")

@@ -76,9 +76,7 @@ if __name__ == "__main__":
                 precip_summed.append(np.NaN)
             else:
                 start_date = find_prev_date(dt, d)
-                print(start_date)
-                print(d)
-                break
+
                 filtered = data_between_dates(data_weather, "datetime", start_date, d)
                                 
                 tmin_mean.append(filtered["Min Temp C"].mean())
@@ -95,7 +93,6 @@ if __name__ == "__main__":
     # combine seasons into final dataset 
     cols = ["datetime", "season", "site", "variety", "param_tmin", "param_tmax", "param_tavg", "param_precip", "hardiness"]
     
-    # combine all seasons into one dataframe
     for idx, season in enumerate(seasons):
         if idx == 0:
             final = season[cols]
