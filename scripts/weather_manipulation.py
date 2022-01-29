@@ -35,4 +35,5 @@ if __name__ == "__main__":
     seasons = [grouped.get_group(x) for x in grouped.groups]
 
     # get the average temperature between all 
+    
 # %%
