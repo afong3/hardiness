@@ -17,5 +17,8 @@ Cygwin query: ``` for year in `seq 2012 2022`;do for month in `seq 1 1`;do wget 
 
 ## ML 
 
+Good tutorials for RNN & correlation analysis:
+* https://github.com/anujdutt9/Feature-Selection-for-Machine-Learning/blob/master/Filter%20Methods/Correlation.ipynb
+* https://github.com/tirthajyoti/Deep-learning-with-Python/blob/master/Notebooks/Weather-RNN.ipynb
 
 ## Bayesian
