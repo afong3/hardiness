@@ -1,4 +1,4 @@
-# Home for Grapevine Cold Hardiness Prediciton
+# Home for Grapevine Cold Hardiness Predicition
 ## Okanagan Valley, BC
 
 # Description
