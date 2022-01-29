@@ -6,6 +6,8 @@ from sklearn.impute import SimpleImputer
 from matplotlib.widgets import RadioButtons, CheckButtons
 import matplotlib.dates as mdates
 
+# Warning: I repeated myself
+
 ####################
 # DATA PREPARATION #
 ####################
