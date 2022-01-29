@@ -45,4 +45,5 @@ if __name__ == "__main__":
         else:
             final = pd.concat([final, season[cols]])    
     
+    final.to_csv("../data/hardiness_delta_and_weather.csv")
 # %%
