@@ -12,16 +12,16 @@ import matplotlib.dates as mdates
 # DATA PREPARATION #
 ####################
 
-dataWeather = pd.read_csv("data/penticton_weather_data_v1.csv")
-dataHardiness = pd.read_csv("data/hardiness_cleaned.csv")
+dataWeather = pd.read_csv("../data/penticton_weather_data_v1.csv")
+dataHardiness = pd.read_csv("../data/hardiness_cleaned.csv")
 
 # drop weird unnamed column
 dataHardiness = dataHardiness.drop("Unnamed: 0", axis = 1)
 
-# fix weird variety names
-dataHardiness['Variety'].loc[dataHardiness['Variety'] == 'Shiraz cl.174'] = 'Shiraz'
-dataHardiness['Variety'].loc[dataHardiness['Variety'] == 'Sauv blanc'] = 'Sauvignon blanc'
-# add julian day to dataWeather
+# # fix weird variety names
+# dataHardiness['variety'].loc[dataHardiness['variety'] == 'Shiraz cl.174'] = 'Shiraz'
+# dataHardiness['variety'].loc[dataHardiness['variety'] == 'Sauv blanc'] = 'Sauvignon blanc'
+# # add julian day to dataWeather
 
 dataWeather["datetime"] = pd.to_datetime(dict(year = dataWeather['Year'], month = dataWeather["Month"], day = dataWeather["Day"]))
 dataWeather["julian_day"] = dataWeather["datetime"].dt.strftime('%j')
@@ -52,12 +52,12 @@ startJulianDay = 246
 dataHardiness["plot_x_location"] = dataHardiness["julian_day"].apply(lambda x : x - startJulianDay if x >= startJulianDay else x + (366 - startJulianDay))
 
 # split hardiness by variety
-varieties = dataHardiness["Variety"].unique()
+varieties = dataHardiness["variety"].unique()
 for variety in varieties:
-    hardiness_variety[variety] = dataHardiness[dataHardiness["Variety"] == variety]
+    hardiness_variety[variety] = dataHardiness[dataHardiness["variety"] == variety]
 
     for year in years:
-        hardiness_variety_year["{v}_{y}".format(v = variety, y = year)] = hardiness_variety[variety][(((hardiness_variety[variety]["Year"] == year) & (hardiness_variety[variety]["julian_day"] > startJulianDay)) | ((hardiness_variety[variety]["Year"] == year + 1) & (hardiness_variety[variety]["julian_day"] <= startJulianDay)))]
+        hardiness_variety_year["{v}_{y}".format(v = variety, y = year)] = hardiness_variety[variety][(((hardiness_variety[variety]["year"] == year) & (hardiness_variety[variety]["julian_day"] > startJulianDay)) | ((hardiness_variety[variety]["year"] == year + 1) & (hardiness_variety[variety]["julian_day"] <= startJulianDay)))]
 
 for year in years:
     dormantSeasonWeather[year] = dataWeather[(((dataWeather["Year"] == year) & (dataWeather["julian_day"] > startJulianDay)) | ((dataWeather["Year"] == year + 1) & (dataWeather["julian_day"] <= startJulianDay)))]
@@ -119,13 +119,13 @@ def plot_all_metrics():
     maxEnvelope_Tmin = [l, l1, l2, l3, l4, l5, l6]
 
     # chardonnay hardiness
-    l8 = ax.scatter(hardiness_variety_year["Chardonnay_2012"]["plot_x_location"], hardiness_variety_year["Chardonnay_2012"]["Hardiness"], alpha = 0.3, color = 'red', marker = 'd', label = "2012", visible = False)
-    l9 = ax.scatter(hardiness_variety_year["Chardonnay_2013"]["plot_x_location"], hardiness_variety_year["Chardonnay_2013"]["Hardiness"], alpha = 0.3, color = 'orange', marker = 'd', label = "2013", visible = False)
-    l10 = ax.scatter(hardiness_variety_year["Chardonnay_2014"]["plot_x_location"], hardiness_variety_year["Chardonnay_2014"]["Hardiness"], alpha = 0.3, color = 'gold', marker = 'd', label = "2014", visible = False)
-    l11 = ax.scatter(hardiness_variety_year["Chardonnay_2015"]["plot_x_location"], hardiness_variety_year["Chardonnay_2015"]["Hardiness"], alpha = 0.3, color = 'green', marker = 'd', label = "2015", visible = False)
-    l12 = ax.scatter(hardiness_variety_year["Chardonnay_2016"]["plot_x_location"], hardiness_variety_year["Chardonnay_2016"]["Hardiness"], alpha = 0.3, color = 'indigo', marker = 'd', label = "2016", visible = False)
-    l13 = ax.scatter(hardiness_variety_year["Chardonnay_2017"]["plot_x_location"], hardiness_variety_year["Chardonnay_2017"]["Hardiness"], alpha = 0.3, color = 'purple', marker = 'd', label = "2017", visible = False)
-    l14 = ax.scatter(hardiness_variety_year["Chardonnay_2018"]["plot_x_location"], hardiness_variety_year["Chardonnay_2018"]["Hardiness"], alpha = 0.3, color = 'silver', marker = 'd', label = "2018", visible = False)
+    l8 = ax.scatter(hardiness_variety_year["Chardonnay_2012"]["plot_x_location"], hardiness_variety_year["Chardonnay_2012"]["hardiness"], alpha = 0.3, color = 'red', marker = 'd', label = "2012", visible = False)
+    l9 = ax.scatter(hardiness_variety_year["Chardonnay_2013"]["plot_x_location"], hardiness_variety_year["Chardonnay_2013"]["hardiness"], alpha = 0.3, color = 'orange', marker = 'd', label = "2013", visible = False)
+    l10 = ax.scatter(hardiness_variety_year["Chardonnay_2014"]["plot_x_location"], hardiness_variety_year["Chardonnay_2014"]["hardiness"], alpha = 0.3, color = 'gold', marker = 'd', label = "2014", visible = False)
+    l11 = ax.scatter(hardiness_variety_year["Chardonnay_2015"]["plot_x_location"], hardiness_variety_year["Chardonnay_2015"]["hardiness"], alpha = 0.3, color = 'green', marker = 'd', label = "2015", visible = False)
+    l12 = ax.scatter(hardiness_variety_year["Chardonnay_2016"]["plot_x_location"], hardiness_variety_year["Chardonnay_2016"]["hardiness"], alpha = 0.3, color = 'indigo', marker = 'd', label = "2016", visible = False)
+    l13 = ax.scatter(hardiness_variety_year["Chardonnay_2017"]["plot_x_location"], hardiness_variety_year["Chardonnay_2017"]["hardiness"], alpha = 0.3, color = 'purple', marker = 'd', label = "2017", visible = False)
+    l14 = ax.scatter(hardiness_variety_year["Chardonnay_2018"]["plot_x_location"], hardiness_variety_year["Chardonnay_2018"]["hardiness"], alpha = 0.3, color = 'silver', marker = 'd', label = "2018", visible = False)
 
     chardonnayHardiness = [l8, l9, l10, l11, l12, l13, l14]
 
@@ -218,25 +218,25 @@ def plot_all_metrics():
     coolDeg = [l71, l72, l73, l74, l75, l76, l77]
     
     # merlot hardiness
-    l78 = ax.scatter(hardiness_variety_year["Merlot_2012"]["plot_x_location"], hardiness_variety_year["Merlot_2012"]["Hardiness"], alpha = 0.3, color = 'red', marker = 'X', label = "2012", visible = False)
-    l79 = ax.scatter(hardiness_variety_year["Merlot_2013"]["plot_x_location"], hardiness_variety_year["Merlot_2013"]["Hardiness"], alpha = 0.3, color = 'orange', marker = 'X', label = "2013", visible = False)
-    l80 = ax.scatter(hardiness_variety_year["Merlot_2014"]["plot_x_location"], hardiness_variety_year["Merlot_2014"]["Hardiness"], alpha = 0.3, color = 'gold', marker = 'X', label = "2014", visible = False)
-    l81 = ax.scatter(hardiness_variety_year["Merlot_2015"]["plot_x_location"], hardiness_variety_year["Merlot_2015"]["Hardiness"], alpha = 0.3, color = 'green', marker = 'X', label = "2015", visible = False)
-    l82 = ax.scatter(hardiness_variety_year["Merlot_2016"]["plot_x_location"], hardiness_variety_year["Merlot_2016"]["Hardiness"], alpha = 0.3, color = 'indigo', marker = 'X', label = "2016", visible = False)
-    l83 = ax.scatter(hardiness_variety_year["Merlot_2017"]["plot_x_location"], hardiness_variety_year["Merlot_2017"]["Hardiness"], alpha = 0.3, color = 'purple', marker = 'X', label = "2017", visible = False)
-    l84 = ax.scatter(hardiness_variety_year["Merlot_2018"]["plot_x_location"], hardiness_variety_year["Merlot_2018"]["Hardiness"], alpha = 0.3, color = 'silver', marker = 'X', label = "2018", visible = False)
+    l78 = ax.scatter(hardiness_variety_year["Merlot_2012"]["plot_x_location"], hardiness_variety_year["Merlot_2012"]["hardiness"], alpha = 0.3, color = 'red', marker = 'X', label = "2012", visible = False)
+    l79 = ax.scatter(hardiness_variety_year["Merlot_2013"]["plot_x_location"], hardiness_variety_year["Merlot_2013"]["hardiness"], alpha = 0.3, color = 'orange', marker = 'X', label = "2013", visible = False)
+    l80 = ax.scatter(hardiness_variety_year["Merlot_2014"]["plot_x_location"], hardiness_variety_year["Merlot_2014"]["hardiness"], alpha = 0.3, color = 'gold', marker = 'X', label = "2014", visible = False)
+    l81 = ax.scatter(hardiness_variety_year["Merlot_2015"]["plot_x_location"], hardiness_variety_year["Merlot_2015"]["hardiness"], alpha = 0.3, color = 'green', marker = 'X', label = "2015", visible = False)
+    l82 = ax.scatter(hardiness_variety_year["Merlot_2016"]["plot_x_location"], hardiness_variety_year["Merlot_2016"]["hardiness"], alpha = 0.3, color = 'indigo', marker = 'X', label = "2016", visible = False)
+    l83 = ax.scatter(hardiness_variety_year["Merlot_2017"]["plot_x_location"], hardiness_variety_year["Merlot_2017"]["hardiness"], alpha = 0.3, color = 'purple', marker = 'X', label = "2017", visible = False)
+    l84 = ax.scatter(hardiness_variety_year["Merlot_2018"]["plot_x_location"], hardiness_variety_year["Merlot_2018"]["hardiness"], alpha = 0.3, color = 'silver', marker = 'X', label = "2018", visible = False)
 
     merlotHardiness = [l78, l79, l80, l81, l82, l83, l84]
 
     # pinot gris hardiness 
     
-    l85 = ax.scatter(hardiness_variety_year["Pinot gris_2012"]["plot_x_location"], hardiness_variety_year["Pinot gris_2012"]["Hardiness"], alpha = 0.3, color = 'red', marker = 'o', label = "2012", visible = False)
-    l86 = ax.scatter(hardiness_variety_year["Pinot gris_2013"]["plot_x_location"], hardiness_variety_year["Pinot gris_2013"]["Hardiness"], alpha = 0.3, color = 'orange', marker = 'o', label = "2013", visible = False)
-    l87 = ax.scatter(hardiness_variety_year["Pinot gris_2014"]["plot_x_location"], hardiness_variety_year["Pinot gris_2014"]["Hardiness"], alpha = 0.3, color = 'gold', marker = 'o', label = "2014", visible = False)
-    l88 = ax.scatter(hardiness_variety_year["Pinot gris_2015"]["plot_x_location"], hardiness_variety_year["Pinot gris_2015"]["Hardiness"], alpha = 0.3, color = 'green', marker = 'o', label = "2015", visible = False)
-    l89 = ax.scatter(hardiness_variety_year["Pinot gris_2016"]["plot_x_location"], hardiness_variety_year["Pinot gris_2016"]["Hardiness"], alpha = 0.3, color = 'indigo', marker = 'o', label = "2016", visible = False)
-    l90 = ax.scatter(hardiness_variety_year["Pinot gris_2017"]["plot_x_location"], hardiness_variety_year["Pinot gris_2017"]["Hardiness"], alpha = 0.3, color = 'purple', marker = 'o', label = "2017", visible = False)
-    l91 = ax.scatter(hardiness_variety_year["Pinot gris_2018"]["plot_x_location"], hardiness_variety_year["Pinot gris_2018"]["Hardiness"], alpha = 0.3, color = 'silver', marker = 'o', label = "2018", visible = False)
+    l85 = ax.scatter(hardiness_variety_year["Pinot gris_2012"]["plot_x_location"], hardiness_variety_year["Pinot gris_2012"]["hardiness"], alpha = 0.3, color = 'red', marker = 'o', label = "2012", visible = False)
+    l86 = ax.scatter(hardiness_variety_year["Pinot gris_2013"]["plot_x_location"], hardiness_variety_year["Pinot gris_2013"]["hardiness"], alpha = 0.3, color = 'orange', marker = 'o', label = "2013", visible = False)
+    l87 = ax.scatter(hardiness_variety_year["Pinot gris_2014"]["plot_x_location"], hardiness_variety_year["Pinot gris_2014"]["hardiness"], alpha = 0.3, color = 'gold', marker = 'o', label = "2014", visible = False)
+    l88 = ax.scatter(hardiness_variety_year["Pinot gris_2015"]["plot_x_location"], hardiness_variety_year["Pinot gris_2015"]["hardiness"], alpha = 0.3, color = 'green', marker = 'o', label = "2015", visible = False)
+    l89 = ax.scatter(hardiness_variety_year["Pinot gris_2016"]["plot_x_location"], hardiness_variety_year["Pinot gris_2016"]["hardiness"], alpha = 0.3, color = 'indigo', marker = 'o', label = "2016", visible = False)
+    l90 = ax.scatter(hardiness_variety_year["Pinot gris_2017"]["plot_x_location"], hardiness_variety_year["Pinot gris_2017"]["hardiness"], alpha = 0.3, color = 'purple', marker = 'o', label = "2017", visible = False)
+    l91 = ax.scatter(hardiness_variety_year["Pinot gris_2018"]["plot_x_location"], hardiness_variety_year["Pinot gris_2018"]["hardiness"], alpha = 0.3, color = 'silver', marker = 'o', label = "2018", visible = False)
 
     pinotGrisHardiness = [l85, l86, l87, l88, l89, l90, l91]
 

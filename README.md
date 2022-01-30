@@ -37,6 +37,7 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC.
 # Cleaning, Manipulation, etc. order
 
 ### To follow manipulation techniques & considerations or make changes:
+I know it's still a bit spaghetty-y (??) but gotta have a trade off for dev time sometimes
 1. start with the 'scripts/hardiness_cleaning_X.py' files to see how data is concatentated, cleaned, etc.
 2. run 'scripts/weather_manipulation.py'
 3. run 'scripts/hardiness_manipulation.py'

@@ -21,3 +21,49 @@
 ## Metrics by samples in deep dormancy
 ## Metrics by samples in deacclimation
 
+#%%
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+
+def plot_all_varieties():
+    # visualize correlated features for all varieties
+
+    corr = data.corr()
+    fig, ax = plt.subplots()
+    fig.set_size_inches(9.5,9.5)
+    ax.set_title("All Varieties Correlations")
+    # plot heatmap for hardiness and hardiness_delta
+    sns.heatmap(corr[["hardiness", "hardiness_delta", "hardiness_delta_abs"]], annot = True, linewidths = 0.5, cmap = "bwr")
+
+    plt.savefig('plots/all_varieties_{n_samples}.png'.format(n_samples = data.shape[0]))
+
+def plot_by_variety():
+    #### Plotting by variety ####
+    # split hardiness into seasons for tidyness
+    grouped = data.groupby("variety")
+    varieties = [grouped.get_group(x).reset_index(drop = True) for x in grouped.groups]
+
+    for variety in varieties:
+        corr = variety.corr()
+        fig, ax = plt.subplots()
+        fig.set_size_inches(9.5,9.5)
+        v = variety.variety[0]
+        ax.set_title("{} Correlations".format(v))
+
+        # plot heatmap for hardiness and hardiness_delta
+        sns.heatmap(corr[["hardiness", "hardiness_delta", "hardiness_delta_abs"]], annot = True, linewidths = 0.5, cmap = "bwr")
+
+        plt.savefig('plots/{var}_{n_samples}.png'.format(var = v, n_samples = variety.shape[0]).replace(" ", "_"))
+        
+if __name__ == "__main__":
+    # import data
+    data = pd.read_csv("../data/model_inputs.csv")
+    data = data.iloc[:, 1:]
+    
+    # plot
+    plot_all_varieties()
+    plot_by_variety()
