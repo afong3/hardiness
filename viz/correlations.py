@@ -34,12 +34,12 @@ def plot_all_varieties():
 
     corr = data.corr()
     fig, ax = plt.subplots()
-    fig.set_size_inches(9.5,9.5)
+    fig.set_size_inches(10,11)
     ax.set_title("All Varieties Correlations")
     # plot heatmap for hardiness and hardiness_delta
     sns.heatmap(corr[["hardiness", "hardiness_delta", "hardiness_delta_abs"]], annot = True, linewidths = 0.5, cmap = "bwr")
 
-    plt.savefig('plots/all_varieties_{n_samples}.png'.format(n_samples = data.shape[0]))
+    plt.savefig('plots/{n_samples}_all_varieties.png'.format(n_samples = data.shape[0]))
 
 def plot_by_variety():
     #### Plotting by variety ####
@@ -50,14 +50,14 @@ def plot_by_variety():
     for variety in varieties:
         corr = variety.corr()
         fig, ax = plt.subplots()
-        fig.set_size_inches(9.5,9.5)
+        fig.set_size_inches(10,11)
         v = variety.variety[0]
         ax.set_title("{} Correlations".format(v))
 
         # plot heatmap for hardiness and hardiness_delta
         sns.heatmap(corr[["hardiness", "hardiness_delta", "hardiness_delta_abs"]], annot = True, linewidths = 0.5, cmap = "bwr")
 
-        plt.savefig('plots/{var}_{n_samples}.png'.format(var = v, n_samples = variety.shape[0]).replace(" ", "_"))
+        plt.savefig('plots/{n_samples}_{var}.png'.format(var = v, n_samples = variety.shape[0]).replace(" ", "_"))
         
 if __name__ == "__main__":
     # import data
