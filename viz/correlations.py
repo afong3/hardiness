@@ -34,7 +34,7 @@ def plot_all_varieties():
 
     corr = data.corr()
     fig, ax = plt.subplots()
-    fig.set_size_inches(10,11)
+    fig.set_size_inches(10,11.5)
     ax.set_title("All Varieties Correlations")
     # plot heatmap for hardiness and hardiness_delta
     sns.heatmap(corr[["hardiness", "hardiness_delta", "hardiness_delta_abs"]], annot = True, linewidths = 0.5, cmap = "bwr")
@@ -50,7 +50,7 @@ def plot_by_variety():
     for variety in varieties:
         corr = variety.corr()
         fig, ax = plt.subplots()
-        fig.set_size_inches(10,11)
+        fig.set_size_inches(10,11.5)
         v = variety.variety[0]
         ax.set_title("{} Correlations".format(v))
 
@@ -58,7 +58,27 @@ def plot_by_variety():
         sns.heatmap(corr[["hardiness", "hardiness_delta", "hardiness_delta_abs"]], annot = True, linewidths = 0.5, cmap = "bwr")
 
         plt.savefig('plots/{n_samples}_{var}.png'.format(var = v, n_samples = variety.shape[0]).replace(" ", "_"))
-        
+
+def plot_by_variety_and_site():
+    ### Plotting by variety and site ### 
+    # may help remove the variation caused by site when thinking about correlation
+    grouped = data.groupby(["variety", "site"])
+    # get each unique variety and site 
+    v_s = [grouped.get_group(x).reset_index(drop = True) if x != (np.NaN, np.NaN) else print(x) for x in grouped.groups]
+    
+    for combo in v_s:
+        corr = combo.corr()
+        fig, ax = plt.subplots()
+        fig.set_size_inches(10,11.5)
+        v = combo.variety[0]
+        site = combo.site[0]
+        ax.set_title("{var} from {site} Correlations".format(var = v, site = site))
+
+        # plot heatmap for hardiness and hardiness_delta
+        sns.heatmap(corr[["hardiness", "hardiness_delta", "hardiness_delta_abs"]], annot = True, linewidths = 0.5, cmap = "bwr")
+
+        plt.savefig('plots/{n_samples}_{var}_{site}.png'.format(var = v, site = site, n_samples = combo.shape[0]).replace(" ", "_"))
+
 if __name__ == "__main__":
     # import data
     data = pd.read_csv("../data/model_inputs.csv")
@@ -67,3 +87,4 @@ if __name__ == "__main__":
     # plot
     plot_all_varieties()
     plot_by_variety()
+    plot_by_variety_and_site()

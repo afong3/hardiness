@@ -77,6 +77,25 @@ def get_cumulative_temp_swings(weather):
     temp_swings = weather["Max Temp C"] - weather["Min Temp C"]
     return temp_swings.sum()
 
+def get_per_change(weather, metric):
+    '''
+    Return the percent change between this and the previous sample
+    weather: pd.DataFrame of weather
+    metric: string for the column name aka weather metric
+    '''
+    
+    first_date = weather["datetime"][0]
+    # same number of plants exist throughout the entire season, get this number
+    n_plants = weather[weather["datetime"] == first_date].shape[0] 
+    
+    prev_weather = weather[metric].shift(n_plants)
+    
+    
+    per_change = (weather[metric] - prev_weather) / prev_weather
+    
+    return per_change
+
+
 if __name__ == "__main__":
     
     # load data
@@ -124,7 +143,12 @@ if __name__ == "__main__":
         temp_swing_cumulative = []
         
         ### 5 ###
-        # cumulative days that increase 
+        # percent change in temperature between sampling dates
+        tmin_per_change = []
+        tmax_per_change = []
+        tavg_per_change = []
+        precip_per_change = []
+        swing_per_change = []
         ### 5 ### 
         # taking tmin, tmax, tavg, precip 14 days before sample day
 
@@ -188,40 +212,49 @@ if __name__ == "__main__":
                 # cumulative temperature swings
                 temp_swing_cumulative.append(get_cumulative_temp_swings(filtered))
                 
-                
+
         # save the derived parameters to the hardiness data
         ### 1 ###
-        season["param_tmin"] = tmin_mean
-        season["param_tmax"] = tmax_mean
-        season["param_tavg"] = tavg_mean
-        season["param_precip"] = precip_summed
+        season["tmin"] = tmin_mean
+        season["tmax"] = tmax_mean
+        season["tavg"] = tavg_mean
+        season["precip"] = precip_summed
         ### 2 ###
-        season["param_tmin_t-1"] = tmin_tminus1
-        season["param_tmin_t-2"] = tmin_tminus2
-        season["param_tmax_t-1"] = tmax_tminus1
-        season["param_tmax_t-2"] = tmax_tminus2
-        season["param_tmavg_t-1"] = tavg_tminus1
-        season["param_tmavg_t-2"] = tavg_tminus2
-        season["param_precip_t-1"] = precip_tminus1
-        season["param_precip_t-2"] = precip_tminus2
+        season["tmin_t-1"] = tmin_tminus1
+        season["tmin_t-2"] = tmin_tminus2
+        season["tmax_t-1"] = tmax_tminus1
+        season["tmax_t-2"] = tmax_tminus2
+        season["tmavg_t-1"] = tavg_tminus1
+        season["tmavg_t-2"] = tavg_tminus2
+        season["precip_t-1"] = precip_tminus1
+        season["precip_t-2"] = precip_tminus2
         ### 3 ###
-        season["param_days_from_aug_1"] = days_from_aug_first
+        season["days_from_aug_1"] = days_from_aug_first
         ### 4 ###
         season["temp_swing_cumulative"] = temp_swing_cumulative
-    # combine seasons into final dataset 
-    cols = ["datetime", "season", "site", "variety", 
-            "param_tmin", "param_tmax", "param_tavg", "param_precip", ### 1 ###
-            "param_tmin_t-1", "param_tmin_t-2", "param_tmax_t-1", "param_tmax_t-2", ### 2 start ###
-            "param_tmavg_t-1", "param_tmavg_t-2",  "param_precip_t-1", "param_precip_t-2", ### 2 end ###
-            "param_days_from_aug_1", ### 3 ###
-            "temp_swing_cumulative", ### 4 ###
-            "hardiness"] ### hardiness last ###
+        
+        ### 5 ###
+        # change between the previous sample date and this one 
+        season["tmin_per_change"] = (get_per_change(season, "tmin"))
+        season["tmax_per_change"] = (get_per_change(season, "tmax"))
+        season["tavg_per_change"] = (get_per_change(season, "tavg"))
+        season["precip_per_change"] = (get_per_change(season, "precip"))                       
+        season["swing_per_change"] = (get_per_change(season, "temp_swing_cumulative"))
     
+    # get rid of 'Unnamed' columns
+    cols = seasons[0].columns.tolist()
+    cols_final = seasons[0].columns.copy().tolist()
+    for col_name in cols:
+        if ("Unnamed" in col_name):
+            print(col_name)
+            cols_final.remove(col_name)
+            
+    # concatentate into final dataframe
     for idx, season in enumerate(seasons):
         if idx == 0:
-            final = season[cols]
+            final = season[cols_final]
         else:
-            final = pd.concat([final, season[cols]])    
+            final = pd.concat([final, season[cols_final]])    
     
     
     final.to_csv("../data/hardiness_and_weather.csv")

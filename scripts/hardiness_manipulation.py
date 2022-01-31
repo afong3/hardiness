@@ -36,19 +36,19 @@ if __name__ == "__main__":
         season["hardiness_delta_abs"] = season["hardiness_delta"].abs()
 
     # combine seasons into final dataset 
-    cols = ["datetime", "season", "site", "variety", 
-            "param_tmin", "param_tmax", "param_tavg", "param_precip", ### 1 ###
-            "param_tmin_t-1", "param_tmin_t-2", "param_tmax_t-1", "param_tmax_t-2", ### 2 start ###
-            "param_tmavg_t-1", "param_tmavg_t-2",  "param_precip_t-1", "param_precip_t-2", ### 2 end ###
-            "param_days_from_aug_1", ### 3 ###
-            "temp_swing_cumulative", ### 4 ###
-            "hardiness", "hardiness_t-1", "hardiness_delta", "hardiness_delta_abs"]
+    cols = seasons[0].columns.tolist()
+    cols_final = seasons[0].columns.copy().tolist()
+    for col_name in cols:
+        if ("Unnamed" in col_name):
+            print(col_name)
+            cols_final.remove(col_name)
+            
     
     for idx, season in enumerate(seasons):
         if idx == 0:
-            final = season[cols]
+            final = season[cols_final]
         else:
-            final = pd.concat([final, season[cols]])    
+            final = pd.concat([final, season[cols_final]])    
     
     # adding label encoded variety and site
     le_site = preprocessing.LabelEncoder()
