@@ -17,7 +17,7 @@ def load_data()->pd.DataFrame:
     
     '''
     # iterates through all files in a path
-    rel_path = "../data/model_inputs.csv"
+    rel_path = "../data/model_train.csv"
     
     # load into dataframe
     data = pd.read_csv(rel_path)
@@ -110,8 +110,9 @@ def create_data_for_model_interpolation():
     Returns X_interp_scaled, y_interp_scaled
     
     '''
+    predictors = pd.read_csv("../data/predictors.csv")
     
-    
+    return predictors
     
 def validate_model(model, X_test, y_test):
     ''' 
@@ -136,7 +137,7 @@ if __name__ == "__main__":
     data, season = load_data()
     
     # process the data 
-    predictors =  ["days_from_aug_1", "temp_swing_cumulative", "tmax_t-1", "tmax_t-2"]
+    predictors =  ["tmax_avg_14", "temp_swing_cumulative_14", "tmax_t-1", "tmax_t-2"]
     target = ["hardiness_delta"]
     
     # scale data 
@@ -146,5 +147,18 @@ if __name__ == "__main__":
     # train SVR
     model = train_model(X_train, y_train.ravel())
     
-    validate_model(model, X_test, y_test)
+    # get predictors
+    pred = create_data_for_model_interpolation()
+    
+    # Get predictions for all data 
+    X_line = pred[predictors].to_numpy()
+    y_line = model.predict(X_line)
+    
+    # Plotting!
+    
+    # get dates from predictions
+    line = pd.DataFrame()
+    line["datetime"] = pred["datetime"]
+    line["prediction"] = y_line
+    line["season"] = pred["season"]
     

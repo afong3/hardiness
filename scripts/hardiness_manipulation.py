@@ -15,7 +15,7 @@ from sklearn import preprocessing
 if __name__ == "__main__":
     
     # load data
-    data_hardiness = pd.read_csv("../data/hardiness_and_weather.csv")
+    data_hardiness = pd.read_csv("../data/hardiness_cleaned.csv")
 
     # split hardiness into seasons for tidyness
     grouped = data_hardiness.groupby("season")
@@ -38,12 +38,14 @@ if __name__ == "__main__":
     # combine seasons into final dataset 
     cols = seasons[0].columns.tolist()
     cols_final = seasons[0].columns.copy().tolist()
+    
+    # remove 'Unnamed' columns so that merging goes smoothly
     for col_name in cols:
         if ("Unnamed" in col_name):
             print(col_name)
             cols_final.remove(col_name)
             
-    
+    # iterate through seasons and concatenate into a final dataframe
     for idx, season in enumerate(seasons):
         if idx == 0:
             final = season[cols_final]
@@ -59,7 +61,5 @@ if __name__ == "__main__":
     final["site_encoded"] = site_encoded
     final["variety_encoded"] = variety_encoded
     
-    
-    
-    final.to_csv("../data/model_inputs.csv")
+    final.to_csv("../data/targets.csv")
 # %%

@@ -23,6 +23,10 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC.
 # ./viz
 * ``` correlations.py ``` creates the correlation plots between weather parameters and hardiness 
 * ``` weather_hardiness_interactive.py ``` interactive visualization for weather & hardiness. Could definitely be updated to make more useful. 
+* Interesting Hardiness Comparisons:
+- Chardonnay, Merlot, Pinot Gris - 2014 vs 2018 
+- '' ,        '',       ''       - 2015 vs 2018
+- 2018 and 2017 are more similar though
 
 # ./bayesian
 * Location for all future bayesian modeling

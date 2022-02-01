@@ -1,262 +1,127 @@
-# Adam Fong
-# January 28, 2022
+# January 31, 2022
 
-# Creating a framework for averaging, summing, etc. of values between two dates
-# NOTE: this is dependent on having no missing values in hardiness data. 
-#       The previous date regardless of whether there was actually a sample is taken as the start date to filter weather data.
-
-# VALIDATION: the png named 'weather_manipulation_validation.png' shows the true avg and sum of tmax, tmin, tavg, precip from the weather station, caluclated in excel.
-# Look at the saved dataset from this file visually to compare. 
-
+# This script takes all of the metrics from weather manipulation and calculates the values between and on sample dates.
+# The data that will be generated is necessary for plotting models.
 #%%
 import pandas as pd
-import datetime 
 import numpy as np
+import astral
+from astral.sun import sun 
 
-def data_between_dates(df: pd.DataFrame, datetime_col: str, start: datetime, end: datetime) -> pd.DataFrame:
-    '''
-    Return a dataframe that is a chunk between the start (inclusive) and end (exclusive).
-    
-    df: data to be split 
-    datetime_col: column in df of dtype: datetime64
-    start: take data after this date (inclusive)
-    end: take data before this date (exclusive)
-    '''
+def load_data():
+    # load raw weather data
+    weather = pd.read_csv("../data/penticton_weather_data.csv", parse_dates={"datetime": ["Date"]}, dayfirst = True)
 
-    filtered = df[(df[datetime_col] >= start) & (df[datetime_col] < end)]
-    
-    return filtered
+    ## seasons are between for now lets just say September 1st and May 1st
+    # the last recorded data date in this file is April 16, 2019 
+    s_start_month = 9 #inclusive so that we can do previous 14 day averages and still capture all of october
 
-# TODO: This could be a poor implementation for edge cases. Try to come up with something else
-def find_prev_date(dates, current_date):
-    '''
-    Return a datetime that is the first occurrence of a new date before the current date
-    
-    dates: pd.Series of dtype datetime
-    current_date_idx: the index current date to search after 
-    '''
-    new_dates = dates[dates < current_date]
-    last_idx = len(new_dates) - 1
-    new_date = new_dates[last_idx]
-    return new_date
+    s_end_month = 5 # exclusive
 
-def days_from_date(dt, target):
-    '''
-    Find how many days dt is from target.
+    # rename ugly names
+    weather = weather.rename(columns= {"Min Temp C": "tmin", "Max Temp C": "tmax", "Mean Temp C": "tmean", "Total Precip (mm)": "precip"})
     
-    dt: datetime
-    target: datetime (currently want August 1st)
-    '''
-    timedelta = dt - target
-    days = timedelta.days
-    
-    return(days)
+    # filter out non dormant or shoulder seasons
+    weather_filtered = weather[(weather["Month"] < s_end_month) | (weather["Month"] >= s_start_month)].reset_index(drop = True)
 
-def get_aug_1st(sample_date):
-    '''
-    Return the correct datetime of august 1st as it gets funky when the year changes but within the same growing season
-    sample_date: datetime
-    '''
-    if sample_date.month > 8:
-        # use the same year as this 
-        aug_first = pd.to_datetime("1-8-{year}".format(year = sample_date.year), format = "%d-%m-%Y")
+    # make precipitation 0 if na
+    weather_filtered["precip"] = weather["precip"].fillna(0)
+
+    return weather_filtered
+
+def create_seasons(data):
+    ### Make a 'season' column to make for easier groupby's in the future
+
+    # a season extends from september, year to may, year+1
+    years_unique = data["Year"].unique()
+
+    # brute force :(
+    season = [] # empty list to populate in for loop
+    for s, year in enumerate(years_unique):
+        if (year == years_unique[len(years_unique) - 1]): # end before calling index out of bounds 
+            continue
+        season_start = pd.to_datetime("09-01-{}".format(year), format = "%m-%d-%Y")
+        season_end = pd.to_datetime("05-01-{}".format(year+1), format = "%m-%d-%Y")
         
-        return aug_first
-    else:
-        # use the previous year 
-        aug_first = pd.to_datetime("1-8-{year}".format(year = sample_date.year - 1), format = "%d-%m-%Y")
+        season_length = data[(data["datetime"] >= season_start) & (data["datetime"] < season_end)].shape[0]
+        season.extend([s+1] * season_length)
 
-        return aug_first
+    data["season"] = season
+    
+    return data
 
-def get_cumulative_temp_swings(weather):
-    '''
-    Return the cumulative temperature swings between tmin and tmax between days
-    weather: pd.DataFrame
-    '''
+def calculate_sunlight(date):
+    # theoretical maximum light in a day
+    # lat long in decimal is - 40.76, 73.984 based on 
+    # this tool https://www.sunearthtools.com/dp/tools/conversion.php?lang=en
+    # and Penticton Weather Station A location in decimal degrees https://climate.weather.gc.ca/climate_data/daily_data_e.html?StationID=50269 
+    station = astral.LocationInfo("Penticton", "Canada", "North America", 40.76, 73.984)
+    s = sun(station.observer, date = date)
     
-    temp_swings = weather["Max Temp C"] - weather["Min Temp C"]
-    return temp_swings.sum()
-
-def get_per_change(weather, metric):
-    '''
-    Return the percent change between this and the previous sample
-    weather: pd.DataFrame of weather
-    metric: string for the column name aka weather metric
-    '''
+    sunlight_hours = (s["sunset"] - s["sunrise"]).seconds / 60 / 60
     
-    first_date = weather["datetime"][0]
-    # same number of plants exist throughout the entire season, get this number
-    n_plants = weather[weather["datetime"] == first_date].shape[0] 
-    
-    prev_weather = weather[metric].shift(n_plants)
-    
-    
-    per_change = (weather[metric] - prev_weather) / prev_weather
-    
-    return per_change
-
+    return sunlight_hours
 
 if __name__ == "__main__":
-    
     # load data
-    data_weather = pd.read_csv("../data/penticton_weather_data.csv")
-    data_hardiness = pd.read_csv("../data/hardiness_cleaned.csv")
-
-    # create column with datetime type for easy filtering
-    data_weather["datetime"] = pd.to_datetime(data_weather["Date"], format = "%d/%m/%Y")
-    data_hardiness["datetime"] = pd.to_datetime(data_hardiness["datetime"], format = "%Y-%m-%d")
-
+    weather = load_data()
+    
+    # create a season column
+    weather = create_seasons(weather)
+    
     # split hardiness into seasons for tidyness
-    grouped = data_hardiness.groupby("season")
-    seasons = [grouped.get_group(x).reset_index(drop = True) for x in grouped.groups]
+    grouped = weather.groupby("season")
+    seasons = [grouped.get_group(season).reset_index(drop = True) for season in grouped.groups]
 
+    # calculate all the metrics so that you can merge weather data and hardiness data
    
-    # get the average temperature between all samples
-    # inelegant loop but such is life, this kinda seems like the most logical way to account for all the edge conditions
-    # wanted to use a rolling window but it doesn't seem this is a use case
-    for season in seasons:
-        # instantiate lists to populate through the loop
-        
-        ### 1 ### taking tmin, tmax, tavg, precip BETWEEN sample dates, not necessarily 14 days... 
-        tmin_mean = []
-        tmax_mean = []
-        tavg_mean = []
-        precip_summed = []
-                
-        ### 2 ###
-        # taking tmin, tmax, tavg, precip 
-        tmin_tminus1 = []
-        tmin_tminus2 = []
-        tmax_tminus1 = []
-        tmax_tminus2 = []
-        tavg_tminus1 = []
-        tavg_tminus2 = []
-        precip_tminus1 = []
-        precip_tminus2 = []
-        
-        ### 3 ###
-        # how many days has it been since Aug 1st - attempting to include acclimation period in model
-        days_from_aug_first = []
-        
-        ### 4 ###
-        # cumulative temperature swings
-        temp_swing_cumulative = []
-        
-        ### 5 ###
-        # percent change in temperature between sampling dates
-        tmin_per_change = []
-        tmax_per_change = []
-        tavg_per_change = []
-        precip_per_change = []
-        swing_per_change = []
-        ### 5 ### 
-        # taking tmin, tmax, tavg, precip 14 days before sample day
-
-        dt = season["datetime"]
-        for sample_date in dt:
-            first_date = dt[0]
-            # skip the first entry bc a different model will be used for this 
-            if sample_date == first_date:
-                ### 1 ###
-                tmin_mean.append(np.NaN)
-                tmax_mean.append(np.NaN)
-                tavg_mean.append(np.NaN)
-                precip_summed.append(np.NaN)
-                ### 2 ###
-                tmin_tminus1.append(np.NaN)
-                tmin_tminus2.append(np.NaN)
-                tmax_tminus1.append(np.NaN)
-                tmax_tminus2.append(np.NaN)
-                tavg_tminus1.append(np.NaN)
-                tavg_tminus2.append(np.NaN)
-                precip_tminus1.append(np.NaN)
-                precip_tminus2.append(np.NaN)
-                
-                ### 3 ###
-                days_from_aug_first.append(np.NaN)
-                
-                ### 4 ### 
-                temp_swing_cumulative.append(np.NaN)
-                
-            else:
-                start_date = find_prev_date(dt, sample_date)
-
-                filtered = data_between_dates(data_weather, "datetime", start_date, sample_date).reset_index(drop = True)
-                
-                ### 1 ###
-                tmin_mean.append(filtered["Min Temp C"].mean())
-                tmax_mean.append(filtered["Max Temp C"].mean())
-                tavg_mean.append(filtered["Mean Temp C"].mean())
-                precip_summed.append(filtered["Total Precip (mm)"].sum())
-                
-                ### 2 ###
-                # get the previous days tmin, tmax, tavg
-                prev_day = filtered.shape[0] - 1
-                two_days_prior = filtered.shape[0] - 2
-                                
-                tmin_tminus1.append(filtered["Min Temp C"][prev_day])
-                tmin_tminus2.append(filtered["Min Temp C"][two_days_prior])
-                tmax_tminus1.append(filtered["Max Temp C"][prev_day])
-                tmax_tminus2.append(filtered["Max Temp C"][two_days_prior])
-                tavg_tminus1.append(filtered["Mean Temp C"][prev_day])
-                tavg_tminus2.append(filtered["Mean Temp C"][two_days_prior])
-                precip_tminus1.append(filtered["Total Precip (mm)"][prev_day])
-                precip_tminus2.append(filtered["Total Precip (mm)"][two_days_prior])
-                
-                ### 3 ###
-                # get how many days this sample is from August 1st
-                aug1st = get_aug_1st(sample_date)
-                days_from_aug_first.append(days_from_date(sample_date, aug1st))
-                
-                ### 4 ###
-                # cumulative temperature swings
-                temp_swing_cumulative.append(get_cumulative_temp_swings(filtered))
-                
-
-        # save the derived parameters to the hardiness data
-        ### 1 ###
-        season["tmin"] = tmin_mean
-        season["tmax"] = tmax_mean
-        season["tavg"] = tavg_mean
-        season["precip"] = precip_summed
-        ### 2 ###
-        season["tmin_t-1"] = tmin_tminus1
-        season["tmin_t-2"] = tmin_tminus2
-        season["tmax_t-1"] = tmax_tminus1
-        season["tmax_t-2"] = tmax_tminus2
-        season["tmavg_t-1"] = tavg_tminus1
-        season["tmavg_t-2"] = tavg_tminus2
-        season["precip_t-1"] = precip_tminus1
-        season["precip_t-2"] = precip_tminus2
-        ### 3 ###
-        season["days_from_aug_1"] = days_from_aug_first
-        ### 4 ###
-        season["temp_swing_cumulative"] = temp_swing_cumulative
-        
-        ### 5 ###
-        # change between the previous sample date and this one 
-        season["tmin_per_change"] = (get_per_change(season, "tmin"))
-        season["tmax_per_change"] = (get_per_change(season, "tmax"))
-        season["tavg_per_change"] = (get_per_change(season, "tavg"))
-        season["precip_per_change"] = (get_per_change(season, "precip"))                       
-        season["swing_per_change"] = (get_per_change(season, "temp_swing_cumulative"))
+    # NOTE: shifting by 2 after doing a rolling average achieves not having the current data included in the window
+    # index 6 should have the value of 9.0 after the rolling sum to have only summed the previous 5 values
+    # l = [1,2,3]*5
+    # test = pd.Series(l)
+    # test.rolling(5).sum().shift(2)
     
-    # get rid of 'Unnamed' columns
-    cols = seasons[0].columns.tolist()
-    cols_final = seasons[0].columns.copy().tolist()
-    for col_name in cols:
-        if ("Unnamed" in col_name):
-            print(col_name)
-            cols_final.remove(col_name)
-            
-    # concatentate into final dataframe
-    for idx, season in enumerate(seasons):
-        if idx == 0:
-            final = season[cols_final]
-        else:
-            final = pd.concat([final, season[cols_final]])    
+    # average of the previous 14 days of a metric
+    weather["tmin_avg_14"] = weather["tmin"].rolling(14).mean().shift(2)
+    weather["tmax_avg_14"] = weather["tmax"].rolling(14).mean().shift(2)
+    weather["tmean_avg_14"] = weather["tmean"].rolling(14).mean().shift(2)
+    weather["precip_total_14"] = weather["precip"].rolling(14).sum().shift(2)
+    
+    # average of the previous 7 days of a metric
+    weather["tmin_avg_7"] = weather["tmin"].rolling(7).mean().shift(2)
+    weather["tmax_avg_7"] = weather["tmax"].rolling(7).mean().shift(2)
+    weather["tmean_avg_7"] = weather["tmean"].rolling(7).mean().shift(2)
+    weather["precip_total_7"] = weather["precip"].rolling(7).sum().shift(2)
+    
+    # temperature swings 
+    weather["temp_swing"] = weather["tmax"] - weather["tmin"] 
+    
+    # cumulative temp swings of the past 14 and 7 days
+    weather["temp_swing_cumulative_14"] = weather["temp_swing"].shift(1).rolling(14).sum()
+    weather["temp_swing_cumulative_7"] = weather["temp_swing"].shift(1).rolling(7).sum()
+    
+    # day - 1 of tmin, tmax, tmean, precip
+    weather["tmin_t-1"] = weather["tmin"].shift(1)
+    weather["tmax_t-1"] = weather["tmax"].shift(1)
+    weather["tmean_t-1"] = weather["tmean"].shift(1)
+    weather["precip_t-1"] = weather["precip"].shift(1)
+    
+    # day - 2 of tmin, tmax, tmean, precip
+    weather["tmin_t-2"] = weather["tmin"].shift(2)
+    weather["tmax_t-2"] = weather["tmax"].shift(2)
+    weather["tmean_t-2"] = weather["tmean"].shift(2)
+    weather["precip_t-2"] = weather["precip"].shift(2)    # days since august 1st of this season 
+    
+    # calculate amount of maximum daylight in a day
+    weather["sunlight"] = weather["datetime"].apply(calculate_sunlight)
+    
+    # total sunlight in previous 14 and 7 days
+    weather["sunlight_14_total"] = weather["sunlight"].rolling(14).sum().shift(2)
+
+    weather["sunlight_7_total"] = weather["sunlight"].rolling(7).sum().shift(2)
     
     
-    final.to_csv("../data/hardiness_and_weather.csv")
-
-# %%
+    # now that we have the rolling metrics complete, let's start at october 1st
+    final = weather[weather["Month"] != 9]
+    
+    final.to_csv("../data/predictors.csv")
