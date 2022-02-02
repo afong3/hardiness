@@ -77,11 +77,11 @@ def plot_by_variety_and_site():
         # plot heatmap for hardiness and hardiness_delta
         sns.heatmap(corr[["hardiness", "hardiness_delta", "hardiness_delta_abs"]], annot = True, linewidths = 0.5, cmap = "bwr")
 
-        plt.savefig('plots/{n_samples}_{var}_{site}.png'.format(var = v, site = site, n_samples = combo.shape[0]).replace(" ", "_"))
+        plt.savefig('correlation_plots/{n_samples}_{var}_{site}.png'.format(var = v, site = site, n_samples = combo.shape[0]).replace(" ", "_"))
 
 if __name__ == "__main__":
     # import data
-    data = pd.read_csv("../data/model_inputs.csv")
+    data = pd.read_csv("../data/model_train.csv")
     data = data.iloc[:, 1:]
     
     # plot
