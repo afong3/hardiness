@@ -55,6 +55,10 @@ Cygwin query: ``` for year in `seq 2012 2022`;do for month in `seq 1 1`;do wget 
 
 # Correlation Analyses
 
+
+# Multicollinearity Checks
+* See if independent variables have a pairwise correlation > 0.8 
+
 # Approaches
 
 ## ML 
