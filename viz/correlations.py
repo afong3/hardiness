@@ -39,7 +39,7 @@ def plot_all_varieties():
     # plot heatmap for hardiness and hardiness_delta
     sns.heatmap(corr[["hardiness", "hardiness_delta", "hardiness_delta_abs"]], annot = True, linewidths = 0.5, cmap = "bwr")
 
-    plt.savefig('plots/{n_samples}_all_varieties.png'.format(n_samples = data.shape[0]))
+    plt.savefig('correlation_plots/{n_samples}_all_varieties.png'.format(n_samples = data.shape[0]))
 
 def plot_by_variety():
     #### Plotting by variety ####
@@ -57,7 +57,7 @@ def plot_by_variety():
         # plot heatmap for hardiness and hardiness_delta
         sns.heatmap(corr[["hardiness", "hardiness_delta", "hardiness_delta_abs"]], annot = True, linewidths = 0.5, cmap = "bwr")
 
-        plt.savefig('plots/{n_samples}_{var}.png'.format(var = v, n_samples = variety.shape[0]).replace(" ", "_"))
+        plt.savefig('correlation_plots/{n_samples}_{var}.png'.format(var = v, n_samples = variety.shape[0]).replace(" ", "_"))
 
 def plot_by_variety_and_site():
     ### Plotting by variety and site ### 
