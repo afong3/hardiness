@@ -3,8 +3,8 @@
 # Creating hardiness simulation data to validate that
 # stan model is correctly estimating parameters.
 
-# setting wd to ./bayesian to adhere to analogue to ML wd
-setwd("c:/users/adamf/onedrive/documents/code/hardiness/bayesian")
+# setting wd to ./viz to adhere to analogue to ML wd
+setwd("c:/users/adamf/onedrive/documents/code/hardiness/viz")
 
 hardiness <- read.csv("../data/model_train.csv")
 
