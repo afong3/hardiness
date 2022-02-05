@@ -40,7 +40,7 @@ for (season in unique(hardiness$season)) {
     title(main = paste(year0, "-", year1, "Season"), line = 0.5)
 }
 
-plot(hardiness_delta ~ tmean_avg_14, data = sb_eco, 
+plot(hardiness_delta ~ tmean_avg_14, data = sb_endo,
 ylim = c(ylim_min, ylim_max), xlim = c(xlim_min, xlim_max))
 
 title(main = "All Seasons", line = 0.5)
