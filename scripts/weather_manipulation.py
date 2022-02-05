@@ -120,6 +120,13 @@ if __name__ == "__main__":
 
     weather["sunlight_7_total"] = weather["sunlight"].rolling(7).sum().shift(2)
     
+    # chilling degree days: thermal time below a threshold temperature T_th
+    th_c = 10 # from Fergusen et al, threshold temperature common to all genotypes
+    
+    weather["DD"] = weather["tmean"] - th_c
+    
+    # check Fergusen et al. to find the endo dormancy boundary for different varieties
+    weather["DD_sum"] = weather.groupby(["season"])["DD"].cumsum()
     
     # now that we have the rolling metrics complete, let's start at october 1st
     final = weather[weather["Month"] != 9]
