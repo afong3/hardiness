@@ -33,8 +33,10 @@ prior = normal(0, 0.2), prior_intercept = normal(10, 2)) # strong priors
 fit_eco_strong_priors <- stan_glm(hardiness_delta ~ tmean_avg_14, data = eco,
 prior = normal(0, 0.2), prior_intercept = normal(10, 2)) # strong priors
 
-
+# saving to this file
 png(file = "../viz/simulations/simulated_data_eco_endo.png")
+
+# open plot space
 par(mfrow = c(2, 2), mar = c(5.1, 4.1, 6, 2.1))
 
 # plotting the simulated data and the estimated line from stan_glm
@@ -53,14 +55,23 @@ title(main = "Endodormancy, Default Priors", line = 0.5)
 plot(hardiness_delta ~ tmean_avg_14, data = eco_small,
 xlab = "Mean Average Temperature", ylab = "Change in Hardiness",
 xlim = c(-10, 10), ylim = c(-20, 20))
-abline(coef(fit_eco_small)[1], coef(fit_eco_small)[2])
-title(main = "Strong Priors, 10 Samples from Eco", line = 0.5)
+
+# plot sample lines from posterior
+n <- 5
+a_post <- rnorm(n, fit_eco_small$coefficients[1], fit_eco_small$ses[1])
+b_post <- rnorm(n, fit_eco_small$coefficients[2], fit_eco_small$ses[2])
+
+for (i in seq_len(a_post)) {
+    abline(a_post[i], b_post[i])
+}
+
+title(main = "10 Samples from Eco, Strong Priors\n5 Posterior Draws")
 
 plot(hardiness_delta ~ tmean_avg_14, data = eco,
 xlab = "Mean Average Temperature", ylab = "Change in Hardiness",
 xlim = c(-10, 10), ylim = c(-20, 20))
 abline(coef(fit_eco_strong_priors)[1], coef(fit_eco_strong_priors)[2])
-title(main = "Strong Priors, All Eco", line = 0.5)
+title(main = "Ecodormancy, Strong Priors", line = 0.5)
 
 
 mtext("Simulated Data with Fitted Parameters",

@@ -24,7 +24,10 @@ ylim_max <- max(na.omit(sb_eco$hardiness_delta)) + 0.5
 xlim_min <- min(na.omit(sb_eco$tmean_avg_14)) - 0.5
 xlim_max <- max(na.omit(sb_eco$tmean_avg_14)) + 0.5
 
+# saving to this file 
 png(file = "simulations/sauvb_oe_season1_eco.png")
+
+# setting up plot space
 par(mfrow = c(3, 3), mar = c(5.1, 4.1, 6, 2.1))
 
 # plot to show endodormancy vs tmean
