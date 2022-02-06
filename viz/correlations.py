@@ -88,3 +88,4 @@ if __name__ == "__main__":
     plot_all_varieties()
     plot_by_variety()
     plot_by_variety_and_site()
+    
