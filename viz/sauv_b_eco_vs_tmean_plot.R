@@ -9,7 +9,7 @@ setwd("c:/users/adamf/onedrive/documents/code/hardiness/viz")
 hardiness <- read.csv("../data/model_train.csv")
 
 # changing datetime to be the correct type
-hardiness$datetime = as.Date(hardiness$datetime, format = "%Y-%m-%d")
+hardiness$datetime <- as.Date(hardiness$datetime, format = "%Y-%m-%d")
 
 sb <- hardiness[hardiness$variety == "Sauvignon blanc", ]
 sb_oe <- sb[sb$site == "Oliver, east", ]
