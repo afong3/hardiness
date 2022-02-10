@@ -34,7 +34,8 @@ if __name__ == "__main__":
         season["hardiness_t-1"] = season["hardiness"].shift(season_n_plants)
         season["hardiness_delta"] = season["hardiness"] - season["hardiness_t-1"]
         season["hardiness_delta_abs"] = season["hardiness_delta"].abs()
-
+        season["hardiness_pct_chg"] = season["hardiness_delta"] / season["hardiness_t-1"]
+        
     # combine seasons into final dataset 
     cols = seasons[0].columns.tolist()
     cols_final = seasons[0].columns.copy().tolist()
