@@ -16,11 +16,32 @@ hardiness <- read.csv("../data/model_train.csv")
 # changing datetime to be the correct type
 hardiness$datetime <- as.Date(hardiness$datetime, format = "%Y-%m-%d")
 
+### WITHOUT PHASE BOUNDARIES
 
 ggplot(hardiness, aes(days_since_aug_1, hardiness)) + # nolint
 geom_point(aes(color = variety)) +
 ylim(-30, -5) +
-labs(title = "Lethal Temperature Threshold for Grapevines in Dormancy", #nolint
+labs(title = "Lethal Temperature Threshold for Grapevines in Dormancy 2012 - 2018", #nolint
+y = expression("Lethal Temperature Threshold" * degree * "C"),
+x = "Date",
+colour = "Variety") +
+
+# MLE trendline
+geom_smooth(color = "black", linetype = "dashed", se = FALSE) +
+
+# converting days since august 1st to be month abbreviations
+scale_x_continuous(breaks = c(91, 122, 153, 184, 214, 245),
+labels = c("Nov", "Dec", "Jan", "Feb", "Mar", "Apr")) +# Nov, Dec, Jan, Feb, Mar, Apr #nolint
+
+ggsave(paste0("hardiness/", "hardiness_all", ".png"))
+
+
+### WITH PHASE BOUNDARIES
+
+ggplot(hardiness, aes(days_since_aug_1, hardiness)) + # nolint
+geom_point(aes(color = variety)) +
+ylim(-30, -5) +
+labs(title = "Lethal Temperature Threshold for Grapevines in Dormancy 2012 - 2018", #nolint
 y = expression("Lethal Temperature Threshold" * degree * "C"),
 x = "Date",
 colour = "Variety") +
@@ -33,9 +54,9 @@ scale_x_continuous(breaks = c(91, 122, 153, 184, 214, 245),
 labels = c("Nov", "Dec", "Jan", "Feb", "Mar", "Apr")) +# Nov, Dec, Jan, Feb, Mar, Apr #nolint
 
 # emphasizing the deep dormancy phase
-geom_vline(xintercept =  = c(122, 214),
+geom_vline(xintercept = c(122, 214),
 linetype = "dashed", color = "#000000",
 show.legend = TRUE)
 
 
-ggsave(paste0("hardiness/", "hardiness_all", ".png"))
+ggsave(paste0("hardiness/", "hardiness_all_with_phases", ".png"))
