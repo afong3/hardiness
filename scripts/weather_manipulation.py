@@ -73,9 +73,19 @@ if __name__ == "__main__":
     grouped = weather.groupby("season")
     seasons = [grouped.get_group(season).reset_index(drop = True) for season in grouped.groups]
 
+    # create a new column which has how many days it's been since August 1st
+    seasonal_aug_1st = [pd.to_datetime("08/01/{y}".format(y = year), format = "%m/%d/%Y") for year in range(2012, 2019)]
+    
+    for idx, season in enumerate(seasons):
+        rows = season.shape[0]
+        season["days_since_aug_1"] =( season["datetime"] - pd.Series(np.repeat(seasonal_aug_1st[idx], rows))).dt.days
+
+    weather = pd.concat(seasons)  
+    
     # calculate all the metrics so that you can merge weather data and hardiness data
    
     # NOTE: shifting by 2 after doing a rolling average achieves not having the current data included in the window
+
     # index 6 should have the value of 9.0 after the rolling sum to have only summed the previous 5 values
     # l = [1,2,3]*5
     # test = pd.Series(l)
@@ -129,6 +139,8 @@ if __name__ == "__main__":
     weather["DD_sum"] = weather.groupby(["season"])["DD"].cumsum()
     
     # now that we have the rolling metrics complete, let's start at october 1st
-    final = weather[weather["Month"] != 9]
+    final = weather[weather["Month"] != 9].reset_index(drop = True)
     
     final.to_csv("../data/predictors.csv")
+# %%
+
