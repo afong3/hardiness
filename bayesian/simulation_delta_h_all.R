@@ -18,6 +18,8 @@
 # CA will be positively correlated with temperature
 # DA will be negatively correlated with temperature 
 library(ggplot2)
+library(rstanarm)
+library(shinystan)
 
 intercept <- 0
 beta_CA <- 0.33
@@ -55,12 +57,21 @@ temp <- c(temp_DD, temp_CA, temp_DA)
 H <- c(H_DD, H_CA, H_DA)
 phase <- c(phase_DD, phase_CA, phase_DA)
 
-data <- data.frame(mean_temp = temp, hardiness = H, phase = phase)
+# ordering the factors to make deep dormancy be the base intercept & slope 
+data <- data.frame(mean_temp = temp, hardiness = H, phase = factor(phase, levels = c("DD", "CA", "DA"))) 
 
-# one hot encode phases
-data$DD <- ifelse(data$phase == "DD", 1, 0)
-data$CA <- ifelse(data$phase == "CA", 1, 0)
-data$DA <- ifelse(data$phase == "DA", 1, 0)
+# plotting with regression lines (NOT THE LINES THAT SIM WAS BASED ON)
+base_scatter <- ggplot(data,
+aes(x = temp,
+y = hardiness,
+color = phase)) +
+geom_point()
 
-ggplot(data = data, aes(temp, hardiness)) +
-geom_point(aes(color = phase))
+# fitting model
+fit <- stan_glm(hardiness ~ mean_temp * phase, data = data)
+
+# plotting lm regression lines ontop of base
+base_scatter +
+geom_smooth(method = "lm", se = F)
+
+# plotting regression lines for interactions from stan
