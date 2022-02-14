@@ -31,23 +31,23 @@ geom_smooth(color = "black", linetype = "dashed", se = FALSE) +
 
 # converting days since august 1st to be month abbreviations
 scale_x_continuous(breaks = c(91, 122, 153, 184, 214, 245),
-labels = c("Nov", "Dec", "Jan", "Feb", "Mar", "Apr")) +# Nov, Dec, Jan, Feb, Mar, Apr #nolint
+labels = c("Nov", "Dec", "Jan", "Feb", "Mar", "Apr")) # Nov, Dec, Jan, Feb, Mar, Apr #nolint
 
 ggsave(paste0("hardiness/", "hardiness_all", ".png"))
 
 
 ### WITH PHASE BOUNDARIES
 
-ggplot(hardiness, aes(days_since_aug_1, hardiness)) + # nolint
+hardiness_phases <- ggplot(hardiness, aes(days_since_aug_1, hardiness)) + # nolint
 geom_point(aes(color = variety)) +
 ylim(-30, -5) +
-labs(title = "Lethal Temperature Threshold for Grapevines in Dormancy 2012 - 2018", #nolint
+labs(title = "Lethal Temperature Threshold for Grapevines, 2012 - 2018", #nolint
 y = expression("Lethal Temperature Threshold" * degree * "C"),
 x = "Date",
 colour = "Variety") +
 
 # MLE trendline
-geom_smooth(color = "black", linetype = "dashed", se = FALSE) +
+geom_smooth(method = 'gam', color = "black", linetype = "dashed", se = FALSE) +
 
 # converting days since august 1st to be month abbreviations
 scale_x_continuous(breaks = c(91, 122, 153, 184, 214, 245),

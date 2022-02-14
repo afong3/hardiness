@@ -1,0 +1,63 @@
+---
+title: "Modeling the Effect of Temperature on Grapevine Cold Hardiness"
+author: "Adam Fong"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(ggplot2)
+source("../bayesian/simulation_delta_h_all.R")
+source("../viz/hardiness_delta_tmean.R")
+source("../viz/hardiness_plot_all.R")
+```
+
+## Overview
+- How does grapevine cold hardiness change over time throughout different phases in dormancy? 
+
+## Hardiness in Dormancy
+``` {r }
+suppressWarnings(print(hardiness_phases))
+```
+
+## Change in Hardiness in Dormancy
+```{r hardiness_delta_tmean}
+suppressWarnings(print(hardiness_delta_tmean))
+```
+
+
+## Simulated Data
+```{r true_params}
+suppressWarnings(print(true_params))
+
+```
+
+
+## Regression with Interactions Fitting
+```{r}
+fit
+```
+
+## Simulation Parameter Recovery
+| **Parameter** | **Value** | **Recovery From Fit** |
+| :---------: | :--------: | :------: |
+| Intercept (all phases) | 0 | 0.1 |
+| Cold Acclimation Beta | -0.33 | -0.3 |
+| Deep Dormancy Beta | -0.02 | 0.0 |
+| Deacclimation Beta | 0.33 | 0.4 | 
+
+
+## Simulation with 100 Posterior Draws
+```{r }
+posterior_preds
+```
+
+## Next Steps
+
+- Account for variety / site in model
+- Use a cumulative weather metric such as chilling degree days as a predictor
+- Create phase boundaries for each season which area derived from temperature metrics
+- Define weakly informed priors
+
+

@@ -27,14 +27,17 @@ data_DA$phase <- factor(rep("Deacclimation", nrow(data_DA)))
 # combine data back together
 data <- rbind(data_CA, data_DD, data_DA)
 
+# change level of factors
+data$phase <- factor(data$phase, levels = c("Deep Dormancy", "Cold Acclimation", "Deacclimation"))
+
 # relationship between tmax and hardiness delta and color by phase
-ggplot(data, aes(tmax_avg_14, hardiness_delta)) + # nolint
+hardiness_delta_tmean <- ggplot(data, aes(tmax_avg_14, hardiness_delta)) + # nolint
 geom_point(aes(color = phase)) +
 ylim(-10, 10) +
 labs(title = "Change in Lethal Temperature Threshold in Grapevines in Dormancy", #nolint
 subtitle = expression(Delta * "T =" * "T"["t"] - "T"["t-1"]),
 y = expression(Delta * "T Change in Lethal Temperature " * degree * "C"),
 x = expression("14 Day Average of Mean Daily Temperature " * degree * "C"), #nolint
-colour = "Acclimation Phase")
+color = "Acclimation Phase")
 
-ggsave(paste0("hardiness_delta/", "hardiness_delta_tmax", ".png"))
+ggsave(paste0("hardiness_delta/", "hardiness_delta_tmean", ".png"))
