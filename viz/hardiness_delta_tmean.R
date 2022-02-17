@@ -13,11 +13,11 @@ hardiness <- read.csv("../data/model_train.csv")
 # changing datetime to be the correct type
 hardiness$datetime <- as.Date(hardiness$datetime, format = "%Y-%m-%d")
 
-# breaking data into three phases, Cold Acclimation (CA), Deep Dormancy (DD), Deacclimation (DA) #nolint
+# breaking data into three phases, Cold Acclimation (CA), Deep Dormancy (DD), Deacclimation (DA) 
 # CA < December, December < DD < March, DA > Mar
-data_CA <- hardiness[hardiness$days_since_aug_1 < 122, ] # nolint
-data_DD <- hardiness[(hardiness$days_since_aug_1 >= 122) & (hardiness$days_since_aug_1 < 214), ] #nolint
-data_DA <- hardiness[(hardiness$days_since_aug_1 >= 214), ] #nolint
+data_CA <- hardiness[hardiness$days_since_aug_1 < 122, ] 
+data_DD <- hardiness[(hardiness$days_since_aug_1 >= 122) & (hardiness$days_since_aug_1 < 214), ] 
+data_DA <- hardiness[(hardiness$days_since_aug_1 >= 214), ] 
 
 # assign factors to data_phase
 data_CA$phase <- factor(rep("Cold Acclimation", nrow(data_CA)))
@@ -31,13 +31,24 @@ data <- rbind(data_CA, data_DD, data_DA)
 data$phase <- factor(data$phase, levels = c("Deep Dormancy", "Cold Acclimation", "Deacclimation"))
 
 # relationship between tmax and hardiness delta and color by phase
-hardiness_delta_tmean <- ggplot(data, aes(tmax_avg_14, hardiness_delta)) + # nolint
+hardiness_delta_tmean <- ggplot(data, aes(tmax_avg_14, hardiness_delta)) + 
 geom_point(aes(color = phase)) +
 ylim(-10, 10) +
-labs(title = "Change in Lethal Temperature Threshold in Grapevines in Dormancy", #nolint
+labs(title = "Change in Lethal Temperature Threshold in Grapevines in Dormancy", 
 subtitle = expression(Delta * "T =" * "T"["t"] - "T"["t-1"]),
 y = expression(Delta * "T Change in Lethal Temperature " * degree * "C"),
-x = expression("14 Day Average of Mean Daily Temperature " * degree * "C"), #nolint
+x = expression("14 Day Average of Mean Daily Temperature " * degree * "C"), 
 color = "Dormancy Phase")
 
 ggsave(paste0("hardiness_delta/", "hardiness_delta_tmean", ".png"))
+
+hardiness_dd <- ggplot(data[data$variety == "Merlot", ], aes(days_since_aug_1, hardiness)) +
+geom_point(aes(shape = factor(season), color = DD_14)) +
+scale_shape_manual(values = 1:7)+ 
+ylim(-30, -10) +
+labs(title = "Change in Lethal Temperature Threshold in Grapevines in Dormancy", 
+subtitle = expression(Delta * "T =" * "T"["t"] - "T"["t-1"]),
+y = expression(Delta * "T Change in Lethal Temperature " * degree * "C"),
+x = expression("Days Since August 1st " * degree * "C"), 
+color = "14 Day Chilling DD")
+
