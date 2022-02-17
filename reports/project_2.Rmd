@@ -1,5 +1,5 @@
 ---
-title: "Modeling the Effect of Temperature on Grapevine Cold Hardiness"
+title: "FRST 507C Project Update: Data Simulation"
 author: "Adam Fong"
 output: ioslides_presentation
 ---
@@ -14,7 +14,9 @@ source("../viz/hardiness_plot_all.R")
 ```
 
 ## Overview
-- How does grapevine cold hardiness change over time throughout different phases in dormancy? 
+- How does air temperature effect how grapevines accumulate cold hardiness? 
+
+- Hardiness is measured as the lowest air temperature that does not result in grapevine death (LTE50)
 
 ## Hardiness in Dormancy
 ``` {r }
@@ -34,7 +36,7 @@ suppressWarnings(print(true_params))
 ```
 
 
-## Regression with Interactions Fitting
+## Fitting stan_glm with Interactions
 ```{r}
 fit
 ```
@@ -57,7 +59,7 @@ posterior_preds
 
 - Account for variety / site in model
 - Use a cumulative weather metric such as chilling degree days as a predictor
-- Create phase boundaries for each season which area derived from temperature metrics
+- Make phase boundaries calculated from temperature instead of visual approximation
 - Define weakly informed priors
 
 

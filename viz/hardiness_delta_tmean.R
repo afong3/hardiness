@@ -38,6 +38,6 @@ labs(title = "Change in Lethal Temperature Threshold in Grapevines in Dormancy",
 subtitle = expression(Delta * "T =" * "T"["t"] - "T"["t-1"]),
 y = expression(Delta * "T Change in Lethal Temperature " * degree * "C"),
 x = expression("14 Day Average of Mean Daily Temperature " * degree * "C"), #nolint
-color = "Acclimation Phase")
+color = "Dormancy Phase")
 
 ggsave(paste0("hardiness_delta/", "hardiness_delta_tmean", ".png"))

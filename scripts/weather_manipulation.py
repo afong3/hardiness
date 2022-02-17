@@ -135,6 +135,9 @@ if __name__ == "__main__":
     
     weather["DD"] = weather["tmean"] - th_c
     
+    # chilling degree days between collection dates
+    weather["DD_14"] = weather["DD"].shift(1).rolling(14).sum()
+    
     # check Fergusen et al. to find the endo dormancy boundary for different varieties
     weather["DD_sum"] = weather.groupby(["season"])["DD"].cumsum()
     
