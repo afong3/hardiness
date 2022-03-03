@@ -37,7 +37,7 @@ def load_data()->pd.DataFrame:
     
     season = data["season"]
     
-    return group, season
+    return group.reset_index(), season
 
 def pickle_scaler(sc, rel_path):
     '''
@@ -75,12 +75,18 @@ def preprocess_data(data: pd.DataFrame, predictors = None, target = None): #pd.D
         X_raw = data[predictors]
         y_raw = data[target]
         
+        # save season data to add on at the end
+        s = data["season"]
+        
         #scale data
         X_scaled, y_scaled, scaler_X = scale_data(X_raw.to_numpy(), y_raw.to_numpy())
 
         # reform the np.arrays back into dataframes nicely so that test train goes smoothly
         X = pd.DataFrame(X_scaled, columns = predictors)
         y = pd.DataFrame(y_scaled, columns = target)
+        
+        # adding back season
+        X["season"] = s
         
         # if you want to save the scalers
         # pickle_scaler(scaler_X, "scalers/X_sauvb_oliver_east")
@@ -89,17 +95,22 @@ def preprocess_data(data: pd.DataFrame, predictors = None, target = None): #pd.D
     else:
         print("add the columns of the predictors and target as separate lists!")
    
-def test_train_split(X:pd.DataFrame, y:pd.Series, season):
+def test_train_split(X:pd.DataFrame, y:pd.Series):
     # add the season column to data to filter
     # take a couple of seasons out to use as test data
-    test_season_condition = (season == 3) | (season == 6)
-    train_season_condition = (season != 3) & (season != 6)
+    s = X["season"]
+    
+    test_season_condition = (s == 2) | (s == 7)
+    train_season_condition = (s != 2) & (s != 7)
     
     X_test = X[test_season_condition]
     X_train = X[train_season_condition]
     y_test = y[test_season_condition]
     y_train = y[train_season_condition]
     
+    # removing the season column because it's not a predictor 
+    X_test = X_test.drop("season", 1)
+    X_train = X_train.drop("season", 1)
     return X_test.to_numpy(), X_train.to_numpy(), y_test.to_numpy(), y_train.to_numpy()
 
 def train_model(X, y):
@@ -152,7 +163,7 @@ if __name__ == "__main__":
     
     # scale data 
     X, y, X_scaler = preprocess_data(data, predictors, target)
-    X_test, X_train, y_test, y_train = test_train_split(X, y, season)
+    X_test, X_train, y_test, y_train = test_train_split(X, y)
     
     # train SVR
     model = train_model(X_train, y_train.ravel())
@@ -172,19 +183,26 @@ if __name__ == "__main__":
     line["datetime"] = pred["datetime"]
     line["prediction"] = y_line
     line["season"] = pred["season"]
+    line["days_since_aug_1"] = pred["days_since_aug_1"]
     
-    for season in line["season"].unique():
+    for szn in line["season"].unique():
         # predictions 
-        data_season = line[line["season"] == season] 
-        dates = data_season["datetime"]
+        data_season = line[line["season"] == szn] 
+        dates = data_season["days_since_aug_1"]
         hardiness_delta_pred = data_season["prediction"]
         
-        plt.plot(dates, hardiness_delta_pred, 'b--')
+        plt.plot(dates, hardiness_delta_pred, 'b--', label = "Predicted Hardiness")
         
         # true values
-        data_true = data[data['season'] == season]
-        dates_true = data_true["datetime"]
+        data_true = data[data['season'] == szn]
+        dates_true = data_true["days_since_aug_1"]
         hardiness_delta_true = data_true[target]
-        plt.scatter(x = dates_true, y = hardiness_delta_true, c = "red")
-        plt.title("Season {s} {t} Model for Sauvignon Blanc, Oliver East".format(s = season, t = target))
+        plt.scatter(x = dates_true, y = hardiness_delta_true, c = "red", label = "Observed Hardiness")
+        plt.title("Season {s} {t} Model for Sauvignon Blanc, Oliver East".format(s = szn, t = target))
+        locs, labels = plt.xticks()
+        plt.xticks([31, 61, 92, 123, 153, 184, 214, 245], ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr"])
+        plt.legend()
         plt.show()
+# %%
+
+

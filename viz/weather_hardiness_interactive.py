@@ -258,7 +258,7 @@ def plot_all_metrics():
 
     # MIDDLE CHECKBUTTON
     rax1 = plt.axes([0.01, 0.25, 0.1, 0.2])
-    yearsLabels = ["2012", "2013", "2014", "2015", "2016", "2017", "2018"]
+    yearsLabels = ["2012 - Red", "2013 - Orange", "2014 - Yellow", "2015 - Green", "2016 - Blue", "2017 - Purple", "2018 - Gray"]
     visibility1 = [False, False, False, False, False, False, False]
     yearCheck = CheckButtons(rax1, yearsLabels, visibility1)
 
