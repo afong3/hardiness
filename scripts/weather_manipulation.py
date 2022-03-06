@@ -141,6 +141,10 @@ if __name__ == "__main__":
     # check Fergusen et al. to find the endo dormancy boundary for different varieties
     weather["DD_sum"] = weather.groupby(["season"])["DD"].cumsum()
     
+    # ok now I'm going to get the change in maximum daily temperature and sum them over the past 14 days
+    weather["tmax_delta"] = weather["tmax"] - weather["tmax"].shift(1)
+    weather["tmax_delta_14"] = weather["tmax_delta"].shift(1).rolling(14).sum()
+    
     # now that we have the rolling metrics complete, let's start at october 1st
     final = weather[weather["Month"] != 9].reset_index(drop = True)
     

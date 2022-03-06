@@ -44,7 +44,8 @@ ggsave(paste0("hardiness_delta/", "hardiness_delta_tmean", ".png"))
 
 hardiness_dd <- ggplot(data[data$variety == "Merlot", ], aes(days_since_aug_1, hardiness)) +
 geom_point(aes(shape = factor(season), color = DD_14)) +
-scale_shape_manual(values = 1:7)+ 
+scale_shape_manual(values = 1:7) + 
+scale_colour_binned(type = "viridis") +
 ylim(-30, -10) +
 labs(title = "Change in Lethal Temperature Threshold in Grapevines in Dormancy", 
 subtitle = expression(Delta * "T =" * "T"["t"] - "T"["t-1"]),
