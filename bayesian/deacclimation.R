@@ -12,13 +12,16 @@ data <- read.csv("../data/model_train.csv")
 deacc <- data %>% filter(deacc == 1)
 
 deacc %>%
-filter(variety == "Riesling") %>%
+filter() %>%
 ggplot() +
-geom_point(aes(x = tmax_avg_14, y = hardiness_delta, color = factor(season)))
+geom_point(aes(x = sunlight_14_total, y = hardiness_pct_chg, color = tmax_delta_14))
 
 # wtf is going on with riesling in season 5 
 
 data %>%
-filter( season == "2") %>%
+filter( season == "5") %>%
 ggplot() + 
-geom_point(aes(x = days_since_aug_1, y = hardiness, color = factor(site)))
+geom_point(aes(x = days_since_aug_1, y = hardiness, color = factor(site)))+
+scale_x_continuous(breaks = c(91, 122, 153, 184, 214, 245),
+labels = c("Nov", "Dec", "Jan", "Feb", "Mar", "Apr")) # Nov, Dec, Jan, Feb, Mar, Apr #nolint
+
