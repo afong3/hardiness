@@ -31,3 +31,4 @@ data["site"] = sites
 data["variety"] = varieties
 
 data.to_csv("../data/hardiness_cleaned.csv")
+# %%

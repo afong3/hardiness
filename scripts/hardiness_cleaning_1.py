@@ -10,3 +10,4 @@ data_hardiness = pd.read_csv("../data/hardiness_cleaned.csv")
 average_removed = data_hardiness[data_hardiness["site"] != "Average Bud Hardiness (all sites, all varieties)"].reset_index(drop=True)
 
 average_removed.to_csv("../data/hardiness_cleaned.csv")
+# %%

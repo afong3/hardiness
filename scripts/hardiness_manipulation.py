@@ -16,7 +16,8 @@ if __name__ == "__main__":
     
     # load data
     data_hardiness = pd.read_csv("../data/hardiness_cleaned.csv")
-
+    data_hardiness["datetime"] = pd.to_datetime(data_hardiness["datetime"])
+    
     # split hardiness into seasons for tidyness
     grouped = data_hardiness.groupby("season")
     seasons = [grouped.get_group(x).reset_index(drop = True) for x in grouped.groups]
@@ -36,6 +37,34 @@ if __name__ == "__main__":
         season["hardiness_delta_abs"] = season["hardiness_delta"].abs()
         season["hardiness_pct_chg"] = season["hardiness_delta"] / season["hardiness_t-1"]
         
+        # making deacclimation column for binary state
+        # enters deacclimation after the first occurence of a change in hardiness greater than the threshold
+        # deacclimation is considered for each individual variety as some varieties deacclimate earlier than others
+        ## i.e. is this sample in deacclmation phase or not 
+        
+        season["deacc"] = 0 # default assumption is that a sample is not in deacclimation
+        
+        vars = season["variety"]
+        earliest_month = 2
+        delta_threshold = 3.5
+        deacc_date_candidates = season[season["month"] >= earliest_month]
+        
+        for v in vars:
+            # not saving season[season["variety"] == v] as a variable because we need to reassign the 'season' reference location
+            deacc_dates_bool = season[season["variety"] == v]["hardiness_delta"] > delta_threshold # per variety
+            deacc_dates = season[season["variety"] == v][deacc_dates_bool].reset_index()
+            
+            if len(deacc_dates) > 0:
+                deacc_start_date = deacc_dates.sort_values("datetime", ascending=True)["datetime"][0] # get the earliest date of threshold 
+            
+                season.loc[(season["variety"] == v) & (season["datetime"] >= deacc_start_date), "deacc"] = 1 # all dates past the first date where threshold was broken gets assigned a 1
+            else:
+                print("No deacclimation for {variety}, in season {season}".format(variety = v, season = season["season"][0]))
+                continue
+            
+            
+
+
     # combine seasons into final dataset 
     cols = seasons[0].columns.tolist()
     cols_final = seasons[0].columns.copy().tolist()
@@ -52,6 +81,7 @@ if __name__ == "__main__":
             final = season[cols_final]
         else:
             final = pd.concat([final, season[cols_final]])    
+        
     
     # adding label encoded variety and site
     le_site = preprocessing.LabelEncoder()
