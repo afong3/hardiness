@@ -47,12 +47,13 @@ if __name__ == "__main__":
         vars = season["variety"]
         earliest_month = 2
         delta_threshold = 3.5
-        deacc_date_candidates = season[season["month"] >= earliest_month]
         
         for v in vars:
             # not saving season[season["variety"] == v] as a variable because we need to reassign the 'season' reference location
-            deacc_dates_bool = season[season["variety"] == v]["hardiness_delta"] > delta_threshold # per variety
-            deacc_dates = season[season["variety"] == v][deacc_dates_bool].reset_index()
+            conditional = (season["variety"] == v) & (season["month"] >= earliest_month)
+            
+            deacc_dates_bool = season[conditional]["hardiness_delta"] > delta_threshold # per variety
+            deacc_dates = season[conditional][deacc_dates_bool].reset_index()
             
             if len(deacc_dates) > 0:
                 deacc_start_date = deacc_dates.sort_values("datetime", ascending=True)["datetime"][0] # get the earliest date of threshold 
