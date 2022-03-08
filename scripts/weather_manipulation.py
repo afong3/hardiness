@@ -145,6 +145,19 @@ if __name__ == "__main__":
     weather["tmax_delta"] = weather["tmax"] - weather["tmax"].shift(1)
     weather["tmax_delta_14"] = weather["tmax_delta"].shift(1).rolling(14).sum()
     
+    # same thing as above for tmin
+    weather["tmin_delta"] = weather["tmin"] - weather["tmin"].shift(1)
+    weather["tmin_delta_14"] = weather["tmin_delta"].shift(1).rolling(14).sum()
+    
+    # same thing for tmean
+    weather["tmean_delta"] = weather["tmean"] - weather["tmean"].shift(1)
+    weather["tmean_delta_14"] = weather["tmean_delta"].shift(1).rolling(14).sum()
+        
+    # same thing for DD
+    weather["DD_delta"] = weather["DD"] - weather["DD"].shift(1)
+    weather["DD_delta_14"] = weather["DD_delta"].shift(1).rolling(14).sum()
+    
+    
     # now that we have the rolling metrics complete, let's start at october 1st
     final = weather[weather["Month"] != 9].reset_index(drop = True)
     

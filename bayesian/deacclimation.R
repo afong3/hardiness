@@ -8,20 +8,20 @@ setwd("c:/users/adamf/onedrive/documents/code/hardiness/bayesian")
 # load hardiness data
 data <- read.csv("../data/model_train.csv")
 
-# filter for when deacclimation starts
+# filter for when deacclimation starts, not including Riesling because it's behaving very unexpectedly
 deacc <- data %>% filter(deacc == 1)
 
 deacc %>%
-filter() %>%
+filter(season != 3, variety != "Riesling") %>%
 ggplot() +
-geom_point(aes(x = sunlight_14_total, y = hardiness_pct_chg, color = tmax_delta_14))
+geom_point(aes(x = sunlight_14_total, y = hardiness_delta, color = tmax_delta_14))
 
-# wtf is going on with riesling in season 5 
+# wtf is going on with riesling 
 
 data %>%
-filter( season == "5") %>%
+filter(deacc == 1) %>%
 ggplot() + 
-geom_point(aes(x = days_since_aug_1, y = hardiness, color = factor(site)))+
+geom_point(aes(x = days_since_aug_1, y = hardiness))+
 scale_x_continuous(breaks = c(91, 122, 153, 184, 214, 245),
 labels = c("Nov", "Dec", "Jan", "Feb", "Mar", "Apr")) # Nov, Dec, Jan, Feb, Mar, Apr #nolint
 
