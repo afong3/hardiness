@@ -25,7 +25,7 @@ set.seed(100)
 intercept <- 0 # if no change in temperature across the sample dates then photoperiod dominates
 beta <- 0.33 
 
-intercept_P <- -14 # photoperiod range of deacclimation is 140 - 180 so intercept will be ugly, I could adjust this by the smallest value but don't worry about this now
+intercept_P <- 0.25 # photoperiod range of deacclimation is 140 - 180 so intercept will be ugly, I could adjust this by the smallest value but don't worry about this now
 beta_P <- 0.1 
 
 n <- 490 # to nicely fit the length of the sequence for photoperiod
@@ -44,7 +44,7 @@ phase <- rep("Deacclimation", n)
 
 photoperiod = seq(140, 180, 3)
 photoperiod_gap_adj = rnorm(length(photoperiod), 0, 1)
-P <- round(photoperiod - photoperiod_gap_adj)
+P <- round(photoperiod - photoperiod_gap_adj) - 137.75 # subtract the lowest value possible 
 
 H_P <- P * beta_P + intercept_P 
 
@@ -68,33 +68,45 @@ H_p_column <- append_me_H
 temp_column <- temp
 H_temp_column <- H_temp
 
-data <- data.frame(temp_delta = temp_column, photoperiod = P_column, hardiness_delta = H_p_column + H_temp_column)
+# making changes on simulation by variety. There are 3 combinations of different slope, intercept, etc.
+# variety 1: different temp slope, same intercept
+# variety 2: different temp slope, different intercept
+# variety 3: same temp slope, same intercept
+
+# this should provide coverage for all possible outcomes
+vs <- c(1,2,3)
+varieties <- rep(vs, n / 2)[1:n] # get samples of all varieties
+
+
+data <- data.frame(temp_delta = temp_column, photoperiod = P_column, hardiness_delta = H_p_column + H_temp_column, variety = varieties)
+
+v1_slope_diff <- 0.1
+v2_slope_diff <- -0.05
+v2_intercept_diff <- -1
+
+v1_hardiness_adj_slope <- ifelse(data$variety == 1, data$temp_delta * (v1_slope_diff), 0) # different temp slope, subtract from hardiness
+
+v2_hardiness_adj_slope <- ifelse(data$variety == 2, data$temp_delta* (v2_slope_diff), 0) # different temp slope 
+v2_hardiness_adj_intercept <- ifelse(data$variety == 2, v2_intercept_diff, 0) # different intercept
+
+v3_hardiness_adj <- ifelse(data$variety == 3, 0, 0) # same slope and intercept
+
+# adjusting hardiness data by variety
+data$hardiness_delta <- data$hardiness_delta + v1_hardiness_adj_slope + v2_hardiness_adj_intercept + v2_hardiness_adj_slope + v3_hardiness_adj
+
 
 # plotting model with both predictors 
 data %>%
 ggplot() + 
-geom_point(aes(x = photoperiod, y = hardiness_delta, color = temp_delta)) 
-
+geom_point(aes(x = photoperiod, y = hardiness_delta, color = temp_delta)) + 
+scale_color_gradient(low = "#0c2abf", high = "#e01e1e") + 
+xlab("Increase in Daylight Hours from Winter Solstice (total in 14 days)") + 
+ylab("Lethal Temp Change (C)")+
+labs(title = "Data Simulation", subtitle = "hardiness_delta ~ photoperiod + (temp_delta | variety)")
 # fitting model
-fit <- stan_glm(hardiness_delta ~ photoperiod + temp_delta, data = data)
+fit <- stan_glmer(hardiness_delta ~ photoperiod + (1 + temp_delta | variety), data = data, iter = 3000, adapt_delta = 0.999 ) # adapt delta to prevent divergent 
+
 
 launch_shinystan(fit)
 
-print(fit, digits = 4)
-
-#### OUTPUT #### 
-
-# stan_glm
-#  family:       gaussian [identity]
-#  formula:      hardiness_delta ~ photoperiod + temp_delta
-#  observations: 490
-#  predictors:   3
-# ------
-#             Median   MAD_SD  
-# (Intercept) -14.1452   0.9140
-# photoperiod   0.1022   0.0056
-# temp_delta    0.3016   0.0295
-
-# Auxiliary parameter(s):
-#       Median MAD_SD
-# sigma 1.6128 0.0524
+print(coef(fit), digits = 4)
