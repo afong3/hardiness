@@ -133,13 +133,43 @@ if __name__ == "__main__":
     # chilling degree days: thermal time below a threshold temperature T_th
     th_c = 10 # from Fergusen et al, threshold temperature common to all genotypes
     
-    weather["DD"] = weather["tmean"] - th_c
+    weather["DD_10"] = weather["tmean"] - 10
+    weather["DD_9"] = weather["tmean"] - 9
+    weather["DD_8"] = weather["tmean"] - 8
+    weather["DD_7"] = weather["tmean"] - 7
+    weather["DD_6"] = weather["tmean"] - 6
+    weather["DD_5"] = weather["tmean"] - 5
+    weather["DD_0"] = weather["tmean"] - 0
     
+    # for all the Degree Day > 0 sums, make sure that negative values are forced to zero 
+    weather["DD_10"][weather["DD_10"] < 0] = 0
+    weather["DD_9"][weather["DD_9"] < 0] = 0
+    weather["DD_8"][weather["DD_8"] < 0] = 0
+    weather["DD_7"][weather["DD_7"] < 0] = 0
+    weather["DD_6"][weather["DD_6"] < 0] = 0
+    weather["DD_5"][weather["DD_5"] < 0] = 0
+    
+    # make DD_0 doesn't get influenced by positive days
+    weather["DD_0"][weather["DD_0"] > 0] = 0
+   
     # chilling degree days between collection dates
-    weather["DD_14"] = weather["DD"].shift(1).rolling(14).sum()
+    weather["DD_10_14"] = weather["DD_10"].shift(1).rolling(14).sum()
+    weather["DD_9_14"] = weather["DD_9"].shift(1).rolling(14).sum()
+    weather["DD_8_14"] = weather["DD_8"].shift(1).rolling(14).sum()
+    weather["DD_7_14"] = weather["DD_7"].shift(1).rolling(14).sum()
+    weather["DD_6_14"] = weather["DD_6"].shift(1).rolling(14).sum()
+    weather["DD_5_14"] = weather["DD_5"].shift(1).rolling(14).sum()
+    weather["DD_0_14"] = weather["DD_0"].shift(1).rolling(14).sum()
+    
     
     # check Fergusen et al. to find the endo dormancy boundary for different varieties
-    weather["DD_sum"] = weather.groupby(["season"])["DD"].cumsum()
+    weather["DD_10_sum"] = weather.groupby(["season"])["DD_10"].cumsum()
+    weather["DD_9_sum"] = weather.groupby(["season"])["DD_9"].cumsum()
+    weather["DD_8_sum"] = weather.groupby(["season"])["DD_8"].cumsum()
+    weather["DD_7_sum"] = weather.groupby(["season"])["DD_7"].cumsum()
+    weather["DD_6_sum"] = weather.groupby(["season"])["DD_6"].cumsum()
+    weather["DD_5_sum"] = weather.groupby(["season"])["DD_5"].cumsum()
+    weather["DD_0_sum"] = weather.groupby(["season"])["DD_0"].cumsum()
     
     # ok now I'm going to get the change in maximum daily temperature and sum them over the past 14 days
     weather["tmax_delta"] = weather["tmax"] - weather["tmax"].shift(1)
@@ -154,8 +184,24 @@ if __name__ == "__main__":
     weather["tmean_delta_14"] = weather["tmean_delta"].shift(1).rolling(14).sum()
         
     # same thing for DD
-    weather["DD_delta"] = weather["DD"] - weather["DD"].shift(1)
-    weather["DD_delta_14"] = weather["DD_delta"].shift(1).rolling(14).sum()
+    weather["DD_10_delta"] = weather["DD_10"] - weather["DD_10"].shift(1)
+    weather["DD_10_delta_14"] = weather["DD_10_delta"].shift(1).rolling(14).sum()
+    weather["DD_9_delta"] = weather["DD_9"] - weather["DD_9"].shift(1)
+    weather["DD_9_delta_14"] = weather["DD_9_delta"].shift(1).rolling(14).sum()
+    weather["DD_8_delta"] = weather["DD_8"] - weather["DD_8"].shift(1)
+    weather["DD_8_delta_14"] = weather["DD_8_delta"].shift(1).rolling(14).sum()
+    weather["DD_7_delta"] = weather["DD_7"] - weather["DD_7"].shift(1)
+    weather["DD_7_delta_14"] = weather["DD_7_delta"].shift(1).rolling(14).sum()
+    weather["DD_6_delta"] = weather["DD_6"] - weather["DD_6"].shift(1)
+    weather["DD_6_delta_14"] = weather["DD_6_delta"].shift(1).rolling(14).sum()
+    weather["DD_5_delta"] = weather["DD_5"] - weather["DD_5"].shift(1)
+    weather["DD_5_delta_14"] = weather["DD_5_delta"].shift(1).rolling(14).sum()
+    weather["DD_0_delta"] = weather["DD_0"] - weather["DD_0"].shift(1)
+    weather["DD_0_delta_14"] = weather["DD_0_delta"].shift(1).rolling(14).sum()
+    
+    # also for photoperiod!!
+    weather["sunlight_delta"] = weather["sunlight"] - weather["sunlight"].shift(1)
+    weather["sunlight_delta_14"] = weather["sunlight_delta"].shift(1).rolling(14).sum()
     
     
     # now that we have the rolling metrics complete, let's start at october 1st
