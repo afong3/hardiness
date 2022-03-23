@@ -202,8 +202,7 @@ if __name__ == "__main__":
     # also for photoperiod!!
     weather["sunlight_delta"] = weather["sunlight"] - weather["sunlight"].shift(1)
     weather["sunlight_delta_14"] = weather["sunlight_delta"].shift(1).rolling(14).sum()
-    
-    
+        
     # now that we have the rolling metrics complete, let's start at october 1st
     final = weather[weather["Month"] != 9].reset_index(drop = True)
     
