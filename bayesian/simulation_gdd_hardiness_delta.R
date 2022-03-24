@@ -8,6 +8,9 @@
 # Model:
 # y ~ alpha_g + alpha_var + alpha_site + beta_1 * x_gdd_5_sum + beta_2 * x_gdd_5_delta + sigma_y
 
+library(rstanarm)
+library(ggplot2)
+
 # set wd to be analogue to ML dir
 setwd("c:/users/adamf/onedrive/documents/code/hardiness/bayesian")
 
@@ -15,7 +18,7 @@ setwd("c:/users/adamf/onedrive/documents/code/hardiness/bayesian")
 
 # parameters
 sigma_y <- 1.5
-alpha_g <- 0.5
+alpha_g <- 2
 beta_1 <- 0.2
 beta_2 <- 0.05
 
@@ -23,13 +26,13 @@ beta_2 <- 0.05
 mu_var <- 0 # both zero because grand alpha
 mu_site <- 0 
 
-sigma_var <- 0.25
+sigma_var <- 0.5
 sigma_site <- 0.1
 
 # create dataset
 n_var <- 10
 n_site <- 8
-n_obs <- 4
+n_obs <- 10
 
 n <- n_var * n_site * n_obs
 
@@ -60,11 +63,16 @@ n_sample_dates <- 20
 sample_space_gdd_sum <- runif(n_sample_dates, 0, 40)
 data$gdd_5_sum <- sample(sample_space_gdd_sum, n, replace = TRUE)
 
-sample_space_gdd_delta <- runif(n_sample_dates, -4, 4)
+sample_space_gdd_delta <- runif(n_sample_dates, -20, 40)
 data$gdd_5_delta <- sample(sample_space_gdd_delta, n, replace = TRUE)
 
 # add in noise
 data$sigma <- rnorm(n, 0, sigma_y)
 
 # calculate hardiness_delta
-data$hardiness_delta <- data$alpha_var + data$alpha_site + data$gdd_5_sum * beta_1 + data$gdd_5_delta * beta_2 + data$sigma
+data$hardiness_delta <- data$alpha_var + data$alpha_site + data$gdd_5_delta * beta_1 + data$gdd_5_sum * beta_2 + data$sigma
+
+# fit model
+fit <- stan_glmer(hardiness_delta ~ gdd_5_delta + gdd_5_sum + (1 | site) + (1 | var), data = data)
+
+print(fit, digits = 4)

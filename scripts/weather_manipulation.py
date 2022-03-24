@@ -199,6 +199,11 @@ if __name__ == "__main__":
     weather["DD_0_delta"] = weather["DD_0"] - weather["DD_0"].shift(1)
     weather["DD_0_delta_14"] = weather["DD_0_delta"].shift(1).rolling(14).sum()
     
+    # change from previous 14 days
+    weather["DD_5_delta_test"] = weather["DD_5_14"] - weather["DD_5_14"].shift(14)
+    weather["tmax_avg_14_delta_test"] = weather["tmax_avg_14"] - weather["tmax_avg_14"].shift(14)
+    weather["tmin_avg_14_delta_test"] = weather["tmin_avg_14"] - weather["tmin_avg_14"].shift(14)
+
     # also for photoperiod!!
     weather["sunlight_delta"] = weather["sunlight"] - weather["sunlight"].shift(1)
     weather["sunlight_delta_14"] = weather["sunlight_delta"].shift(1).rolling(14).sum()
