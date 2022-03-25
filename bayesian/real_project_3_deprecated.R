@@ -46,11 +46,11 @@ print(fit4, digits = 4)
 
 launch_shinystan(fit)
 
-cor(drop_na(deacc[,c("hardiness_delta", "DD_5_14", "DD_5_delta_14", "days_since_aug_1", "sunlight_delta_14")]))
+cor(drop_na(deacc[,c("hardiness_delta","DD_5_delta_test", "DD_5_14", "DD_5_delta_14", "days_since_aug_1", "sunlight_delta_14")]))
 cor(drop_na(acc[,c("hardiness_delta", "DD_5_14", "DD_5_delta_14", "DD_0_14", "sunlight_delta_14")]))
 cor(drop_na(data[,c("hardiness_delta", "DD_5_14", "DD_5_delta_14", "DD_0_14", "sunlight_delta_14")]))
-cor(drop_na(data[,c("hardiness_delta", "DD_5_delta_test", "DD_5_14", "tmax_avg_14_delta_test", "tmin_avg_14_delta_test", "days_since_aug_1")]))
-cor(drop_na(deacc[,c("hardiness_delta", "DD_5_delta_test", "tmax_avg_14_delta_test", "tmin_avg_14_delta_test", "days_since_aug_1")]))
+cor(drop_na(data[,c("hardiness_delta", "DD_5_delta_test", "DD_5_14", "DD_5_delta_14", "tmax_avg_14_delta_test", "tmin_avg_14_delta_test", "days_since_aug_1")]))
+cor(drop_na(deacc[,c("hardiness_delta", "DD_5_delta_test", "DD_5_delta_14", "tmax_avg_14_delta_test", "tmin_avg_14_delta_test", "days_since_aug_1")]))
 
 deacc %>%
     ggplot() + 
@@ -72,8 +72,9 @@ interesting3 <- deacc %>%
     geom_point(aes(x = DD_5_delta_test, y = hardiness_delta, color = factor(season)))
 
 interesting4 <- deacc %>%
-    ggplot(aes(x = DD_5_delta_test, y = hardiness_delta, color = DD_5_14, alpha = 0.1)) +
-    geom_jitter(width = 3) 
+    ggplot(aes(x = DD_5_delta_test, y = hardiness_delta, color = DD_5_14)) +
+    geom_jitter(width = 3, alpha = 0.4) +
+    facet_wrap(~variety)
 
 interesting5 <- data %>%
     ggplot(aes(x = DD_5_delta_test, y = hardiness_delta, color = DD_5_14, alpha = 0.1)) +

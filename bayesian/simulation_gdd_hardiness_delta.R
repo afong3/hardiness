@@ -6,10 +6,16 @@
 # higher change in GDD > 5 also means faster deacclimation rate but with less of an effect as total GDD > 5 sum
 
 # Model:
+# y ~ normal(mu_y, sigma_y)
 # y ~ alpha_g + alpha_var + alpha_site + beta_1 * x_gdd_5_sum + beta_2 * x_gdd_5_delta + sigma_y
+# alpha_var ~ normal(0, sigma_var)
+# alpha_site ~ normal(0, sigma_site)
 
 library(rstanarm)
 library(ggplot2)
+library(dplyr)
+library(tidybayes)
+library(modelr)
 
 # set wd to be analogue to ML dir
 setwd("c:/users/adamf/onedrive/documents/code/hardiness/bayesian")
@@ -70,9 +76,32 @@ data$gdd_5_delta <- sample(sample_space_gdd_delta, n, replace = TRUE)
 data$sigma <- rnorm(n, 0, sigma_y)
 
 # calculate hardiness_delta
-data$hardiness_delta <- data$alpha_var + data$alpha_site + data$gdd_5_delta * beta_1 + data$gdd_5_sum * beta_2 + data$sigma
+data$hardiness_delta <- alpha_g + data$alpha_var + data$alpha_site + data$gdd_5_delta * beta_1 + data$gdd_5_sum * beta_2 + data$sigma
+
+# prior definitions
+# beta_1 ~ normal(mu_b_1, sigma_b_1)
+# beta_2 ~ normal(mu_b_2, sigma_b_2)
+prior_b1_mu = 0.2
+prior_b2_mu = 0.1 
+prior_b1_sigma = 0.2
+prior_b2_sigma = 0.1
+
+# check out https://www.bayesrulesbook.com/chapter-17.html for setting crossed effect priors
+
 
 # fit model
-fit <- stan_glmer(hardiness_delta ~ gdd_5_delta + gdd_5_sum + (1 | site) + (1 | var), data = data)
+fit <- stan_glmer(hardiness_delta ~ gdd_5_delta + gdd_5_sum + (1 | site) + (1 | var), data = data,
+    prior_intercept = normal(1, 1),
+    prior = normal(location = c(prior_b1_mu, prior_b2_mu), scale = c(prior_b1_sigma, prior_b2_sigma))
+    )
 
 print(fit, digits = 4)
+
+draws <- spread_draws(fit, `(Intercept)`, gdd_5_delta, gdd_5_sum)
+posteriors <- posterior_predict(fit, data)
+
+# plotting model
+data %>%
+    ggplot() +
+    geom_point(aes(x = gdd_5_delta, y = hardiness_delta, color = gdd_5_sum)) +
+    geom_abline(data = draws, aes(intercept = `(Intercept)` + , slope = gdd_5_delta), size = 0.2, alpha = 0.1, color = 'red')

@@ -139,6 +139,10 @@ if __name__ == "__main__":
     weather["DD_7"] = weather["tmean"] - 7
     weather["DD_6"] = weather["tmean"] - 6
     weather["DD_5"] = weather["tmean"] - 5
+    weather["DD_4"] = weather["tmean"] - 4
+    weather["DD_3"] = weather["tmean"] - 3
+    weather["DD_2"] = weather["tmean"] - 2
+    weather["DD_1"] = weather["tmean"] - 1
     weather["DD_0"] = weather["tmean"] - 0
     
     # for all the Degree Day > 0 sums, make sure that negative values are forced to zero 
@@ -148,9 +152,13 @@ if __name__ == "__main__":
     weather["DD_7"][weather["DD_7"] < 0] = 0
     weather["DD_6"][weather["DD_6"] < 0] = 0
     weather["DD_5"][weather["DD_5"] < 0] = 0
+    weather["DD_4"][weather["DD_4"] < 0] = 0
+    weather["DD_3"][weather["DD_3"] < 0] = 0
+    weather["DD_2"][weather["DD_2"] < 0] = 0
+    weather["DD_1"][weather["DD_1"] < 0] = 0
     
     # make DD_0 doesn't get influenced by positive days
-    weather["DD_0"][weather["DD_0"] > 0] = 0
+    #weather["DD_0"][weather["DD_0"] > 0] = 0
    
     # chilling degree days between collection dates
     weather["DD_10_14"] = weather["DD_10"].shift(1).rolling(14).sum()
@@ -159,6 +167,10 @@ if __name__ == "__main__":
     weather["DD_7_14"] = weather["DD_7"].shift(1).rolling(14).sum()
     weather["DD_6_14"] = weather["DD_6"].shift(1).rolling(14).sum()
     weather["DD_5_14"] = weather["DD_5"].shift(1).rolling(14).sum()
+    weather["DD_4_14"] = weather["DD_4"].shift(1).rolling(14).sum()
+    weather["DD_3_14"] = weather["DD_3"].shift(1).rolling(14).sum()
+    weather["DD_2_14"] = weather["DD_2"].shift(1).rolling(14).sum()
+    weather["DD_1_14"] = weather["DD_1"].shift(1).rolling(14).sum()
     weather["DD_0_14"] = weather["DD_0"].shift(1).rolling(14).sum()
     
     
@@ -200,7 +212,18 @@ if __name__ == "__main__":
     weather["DD_0_delta_14"] = weather["DD_0_delta"].shift(1).rolling(14).sum()
     
     # change from previous 14 days
+    weather["DD_10_delta_test"] = weather["DD_10_14"] - weather["DD_10_14"].shift(14)
+    weather["DD_9_delta_test"] = weather["DD_9_14"] - weather["DD_9_14"].shift(14)
+    weather["DD_8_delta_test"] = weather["DD_8_14"] - weather["DD_8_14"].shift(14)
+    weather["DD_7_delta_test"] = weather["DD_7_14"] - weather["DD_7_14"].shift(14)
+    weather["DD_6_delta_test"] = weather["DD_6_14"] - weather["DD_6_14"].shift(14)
     weather["DD_5_delta_test"] = weather["DD_5_14"] - weather["DD_5_14"].shift(14)
+    weather["DD_4_delta_test"] = weather["DD_4_14"] - weather["DD_4_14"].shift(14)
+    weather["DD_3_delta_test"] = weather["DD_3_14"] - weather["DD_3_14"].shift(14)
+    weather["DD_2_delta_test"] = weather["DD_2_14"] - weather["DD_2_14"].shift(14)
+    weather["DD_1_delta_test"] = weather["DD_1_14"] - weather["DD_1_14"].shift(14)
+    weather["DD_0_delta_test"] = weather["DD_0_14"] - weather["DD_0_14"].shift(14)
+    
     weather["tmax_avg_14_delta_test"] = weather["tmax_avg_14"] - weather["tmax_avg_14"].shift(14)
     weather["tmin_avg_14_delta_test"] = weather["tmin_avg_14"] - weather["tmin_avg_14"].shift(14)
 
