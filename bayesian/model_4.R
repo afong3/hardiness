@@ -19,9 +19,13 @@ data <- read.csv("../data/model_train.csv")
 # Riesling and Pinot gris are artifacts of this flaw 
 deacc <- data %>% filter(deacc == 1)
 
-fit <- stan_glmer(hardiness_delta ~ DD_5_delta_test + (1 | site_encoded) + (1 | variety_encoded), data = deacc,
+fit <- stan_glmer(hardiness_delta ~ DD_5_delta_test + (1 | site_encoded) + (1 | variety_encoded) + (1 + DD_5_delta_test | season), data = deacc,
         prior = normal(0.2, 0.2),
-        prior_intercept = normal(2, 1.5))
+        prior_intercept = normal(2, 1.5),
+        prior_aux = exponential(1),
+        prior_covariance = decov(shape = 1, 
+                                scale = 1)
+)
 
 print(fit, digits = 4)
 
@@ -39,11 +43,12 @@ df_effects <- df_posterior %>%
     mutate_at(
         .vars = vars(matches("b\\[\\(Intercept")), 
         .funs = ~ . + df_posterior$`(Intercept)`
-    ) %>%
-    mutate_at(
-        .vars = vars(matches("b\\[DD")),
-        .funs = ~ . + df_posterior$DD_5_delta_test
     )
+    #  %>% # adding crossed effect slopes to main slope
+    # mutate_at(
+    #     .vars = vars(matches("b\\[DD")),
+    #     .funs = ~ . + df_posterior$DD_5_delta_test
+    # )
 
 df_long_effects <- df_effects %>%
     select(matches("b\\[")) %>%
@@ -127,3 +132,4 @@ site_partial_pooling <- deacc %>%
     facet_wrap("site") +
     labs(x = "Change GDD > 5 between Sample Dates",
         y = "Change in Lethal Temperature (C)")
+
