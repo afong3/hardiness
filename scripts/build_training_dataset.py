@@ -6,7 +6,7 @@ import pandas as pd
 
 def load_data():
     df1 = pd.read_csv("../data/predictors.csv")
-    df2 = pd.read_csv("../data/targets.csv")
+    df2 = pd.read_csv("../data/targets_2_0.csv")
     
     return df1, df2
 
@@ -31,4 +31,4 @@ if __name__ == "__main__":
             
     final = merged[cols_final]
     
-    final.to_csv("../data/model_train.csv")
+    final.to_csv("../data/model_train_2_0.csv")

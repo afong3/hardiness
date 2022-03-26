@@ -46,7 +46,7 @@ if __name__ == "__main__":
         
         vars = season["variety"]
         earliest_month = 2
-        delta_threshold = 3.25
+        delta_threshold = 2.0
         
         for v in vars:
             # not saving season[season["variety"] == v] as a variable because we need to reassign the 'season' reference location
@@ -95,5 +95,6 @@ if __name__ == "__main__":
     final["site_encoded"] = site_encoded
     final["variety_encoded"] = variety_encoded
     
-    final.to_csv("../data/targets.csv")
+    final.to_csv("../data/targets_{t}.csv".format(t = str.replace(str(delta_threshold), ".", "_")))
 # %%
+
