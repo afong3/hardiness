@@ -6,7 +6,7 @@ import pandas as pd
 
 def load_data():
     df1 = pd.read_csv("../data/predictors.csv")
-    df2 = pd.read_csv("../data/targets_2_0.csv")
+    df2 = pd.read_csv("../data/targets_3_0.csv")
     
     return df1, df2
 

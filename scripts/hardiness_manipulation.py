@@ -46,11 +46,12 @@ if __name__ == "__main__":
         
         vars = season["variety"]
         earliest_month = 2
-        delta_threshold = 2.0
+        latest_month = 9
+        delta_threshold = 3.5
         
         for v in vars:
             # not saving season[season["variety"] == v] as a variable because we need to reassign the 'season' reference location
-            conditional = (season["variety"] == v) & (season["month"] >= earliest_month)
+            conditional = (season["variety"] == v) & (season["month"] >= earliest_month) & (season["month"] <= latest_month)
             
             deacc_dates_bool = season[conditional]["hardiness_delta"] > delta_threshold # per variety
             deacc_dates = season[conditional][season["variety"] == v][deacc_dates_bool].reset_index()
@@ -94,7 +95,8 @@ if __name__ == "__main__":
     
     final["site_encoded"] = site_encoded
     final["variety_encoded"] = variety_encoded
-    
+        
     final.to_csv("../data/targets_{t}.csv".format(t = str.replace(str(delta_threshold), ".", "_")))
 # %%
+
 
