@@ -36,8 +36,8 @@ sigma_var <- 0.5
 sigma_site <- 0.1
 
 # create dataset
-n_var <- 10
-n_site <- 8
+n_var <- 15
+n_site <- 13
 n_obs <- 3
 
 n <- n_var * n_site * n_obs
@@ -147,7 +147,7 @@ df_site_sample <- df_long_effects %>%
 
 variety_partial_pooling <- data %>% 
     mutate(variety_encoded = var) %>%
-    ggplot(aes(x = gdd_5_delta, y = hardiness_delta)) +
+    ggplot(aes(x = gdd_5_delta, y = hardiness_delta, color = factor(site))) +
     geom_abline(
         aes(intercept = Intercept, slope = slope),
             data = df_variety_sample,
@@ -156,11 +156,13 @@ variety_partial_pooling <- data %>%
     ) +
     geom_jitter(width = 3, alpha = 0.4) +
     facet_wrap("variety_encoded") + 
-    labs(title = "Grapevine Cold Hardiness Deacclimation Rate Response to Air Temperature\nin the Okanagan Valley, BC 2012 - 2018",
-        subtitle = "Partial pooling across varieties.\n50 posterior draws are shown with varying slopes and intercepts by variety.\nSite effect is not shown.",
-        color = "Vineyard Location",
-        x = "Change GDD > 5 between Sample Dates",
+    labs(title = "Simulated Data, Faceted by Variety",
+        subtitle = "Partial pooling across varieties.\n50 posterior draws are shown by variety.\nSite effect is not shown.",
+        color = "Vineyard",
+        x = "Change in GDD > 5",
         y = "Change in Lethal Temperature (C)")
+
+ggsave(file="../viz/simulated_data.png", width=6, height=6, dpi=300)
 
 # plotting model: need to do posterior predictive checks on simulation as well
 data %>%
