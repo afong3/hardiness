@@ -32,6 +32,19 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC.
 * Location for all future bayesian modeling
 
 # ./ML
+
+* SVR_sauv_blanc_all_sites.py
+    - Trained SVR with an 'rbf' kernel
+    - model tries to predict the true hardiness of a grapevine given the average temperature from the previous 14 days 
+    - data was split into a test and train set
+        - Test: Seasons 3 and 6 (2014-2015 and 2017-2018)
+        - Train: Seasons 1, 2, 4, 5, 7
+    - data is completely pooled by site 
+    - model input is average maximum temperature of the previous 14 days
+    
+* SVR_sauv_blanc_oliver_east.py
+    - Same model and setup as the SVR file above, but this was trained and tested on data only from Oliver, East
+
 ## SVR Results
 ### Validation Years
 <img src="viz/ML_predictions/SVR_3.png" alt="climate_bc" width="800">
@@ -42,10 +55,6 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC.
 <img src="viz/ML_predictions/SVR_2.png" alt="climate_bc" width="800">
 <img src="viz/ML_predictions/SVR_4.png" alt="climate_bc" width="800">
 <img src="viz/ML_predictions/SVR_7.png" alt="climate_bc" width="800">
-
-# Considerations up for Conversation
-
-1. imputing for weather and not for hardiness
 
 # Cleaning, Manipulation, etc. order
 
@@ -71,9 +80,5 @@ Cygwin query: ``` for year in `seq 2012 2022`;do for month in `seq 1 1`;do wget 
 # Approaches
 
 ## ML 
-
-Good tutorials for RNN & correlation analysis:
-* https://github.com/anujdutt9/Feature-Selection-for-Machine-Learning/blob/master/Filter%20Methods/Correlation.ipynb
-* https://github.com/tirthajyoti/Deep-learning-with-Python/blob/master/Notebooks/Weather-RNN.ipynb
 
 ## Bayesian

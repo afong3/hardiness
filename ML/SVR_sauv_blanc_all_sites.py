@@ -144,7 +144,7 @@ if __name__ == "__main__":
     
     # pick any columns in data to play with and check fit
     # CHANGE ME IF YOU WANT
-    predictors =  ["tmax_avg_14", "temp_swing_cumulative_14", "sunlight_14_total"]
+    predictors =  ["tmax_avg_14"]
 
     # CHANGE ME IF YOU WANT
     target = ["hardiness"]
