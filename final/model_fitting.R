@@ -190,23 +190,40 @@ fit_only_variety_interaction_loo <- loo(fit_only_variety_interaction)
 
 loo_compare(fit_loo, fit_complete_pool_loo, fit_only_variety_loo, fit_only_site_loo, fit_only_season_loo, fit_only_variety_interaction_loo)
 
-post_vs_prior_hierarchical_levels <- posterior_vs_prior(fit, "varying") + 
+post_vs_prior_variety <- posterior_vs_prior(fit, regex_par = 'va') + 
     ggplot2::geom_hline(yintercept = 0, size = 0.3, linetype = 3) +
     ggplot2::coord_flip() +
-    ggplot2::ggtitle("Comparing the Prior and Posterior for Hierarchical Levels") 
+    ggplot2::ggtitle("Comparing the Prior and Posterior for Variety Level") +
+    theme(legend.position="none")
+    
 
-ggsave(file="../viz/post_vs_prior_hierarch.pdf", width=12, height=4, dpi=300)
+ggsave(file="../viz/post_vs_prior_variety.png", width=5.5, height=4, dpi=300)
 
-post_vs_prior_beta_and_alpha_grand <- posterior_vs_prior(fit, c("alpha", "beta")) + 
+post_vs_prior_site <- posterior_vs_prior(fit, regex_par = 'sit') + 
+    ggplot2::geom_hline(yintercept = 0, size = 0.3, linetype = 3) +
+    ggplot2::coord_flip() +
+    ggplot2::ggtitle("Comparing the Prior and Posterior for Site Level") +
+    theme(legend.position="none")
+
+ggsave(file="../viz/post_vs_prior_site.png", width=5, height=4, dpi=300)
+
+post_vs_prior_beta_and_alpha_grand <- posterior_vs_prior(fit, c("alpha", "beta", "sigma")) + 
     ggplot2::geom_hline(yintercept = 0, size = 0.3, linetype = 3) +
     ggplot2::coord_flip() +
     ggplot2::ggtitle("Comparing the Prior and Posterior for Beta and Grand Alpha") 
 
-ggsave(file="../viz/post_vs_prior_grand.pdf", width=12, height=4, dpi=300)
+ggsave(file="../viz/post_vs_prior_grand.png", width=12, height=4, dpi=300)
 
 hist_facet_ppc <- ppc_hist(y = deacc$hardiness_delta[!is.na(deacc$hardiness_delta)], 
                     yrep = posterior_predict(fit, draws = 8)) +
                     labs(title = "Histogram PPC")
+
+ggsave(file="../viz/ppc_hist.png", width=6, height=7, dpi=300)
+ 
 dens_overlay <- pp_check(fit) +
     labs(title = "Density Overlay PPC")
+ggsave(file="../viz/ppc_dens_overlay.png", width=6, height=7, dpi=300)
+
+
 ppc_scatter_avg(y = deacc$hardiness_delta[!is.na(deacc$hardiness_delta)], yrep = posterior_predict(fit, draws = 5))
+

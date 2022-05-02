@@ -15,6 +15,7 @@ from sklearn.preprocessing import StandardScaler
 from pickle import dump
 from sklearn.svm import SVR
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 def load_data()->pd.DataFrame:
     '''
@@ -177,12 +178,25 @@ if __name__ == "__main__":
         dates = data_season["datetime"]
         hardiness_delta_pred = data_season["prediction"]
         
-        plt.plot(dates, hardiness_delta_pred, 'b--')
+        plt.plot(dates, hardiness_delta_pred, 'b--', label = "Model Prediction")
+        
+        ax = plt.gca()
         
         # true values
         data_true = data[data['season'] == season]
         dates_true = data_true["datetime"]
         hardiness_delta_true = data_true[target]
-        plt.scatter(x = dates_true, y = hardiness_delta_true, c = "red")
+        
+        # change tick frequency
+        ax.xaxis.set_major_locator(mdates.DayLocator(interval = 20))
+        
+        plt.scatter(x = dates_true, y = hardiness_delta_true, c = "red", label = "True Observations")
         plt.title("Season {s} {t} Model for Sauvignon Blanc".format(s = season, t = target))
+        plt.xticks(rotation = 90)
+        plt.gcf().autofmt_xdate()
+        plt.savefig("../viz/ML_predictions/SVR_{fn}.png".format(fn = season), dpi = 150)
+        
+        plt.legend()
         plt.show()
+        
+        
