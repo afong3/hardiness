@@ -2,7 +2,7 @@
 ## Okanagan Valley, BC
 
 # Description
-Predicting grapevine cold hardiness in the Okanagan Valley, BC.
+Predicting grapevine cold hardiness in the Okanagan Valley, BC using data from 2012 - 2018 from multiple sites and varieties. 
 
 
 # ./scripts
@@ -16,20 +16,18 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC.
 # ./data
 * Data that was created from the ./scripts directory OR was inhereted by another source (cleaned Penticton weather)
 * ``` hardiness_cleaned.csv ``` should be treated as immutable. Do not write to this file unless tested well in the '/scripts/hardiness_cleaning_X.py' files
-* ``` model_inputs.csv ``` contains all the current weather parameters comparing to hardiness and the change in hardiness between timesteps
+* ``` model_train.csv ``` contains all the current weather parameters comparing to hardiness and the change in hardiness between timesteps
 * ``` penticton_weather_data.csv ``` is the inhereted source for weather data from the Penticton Weather Station. TODO: clean the uncleaned penticton weather data to get wind and other metrics that were left out of this data
 * ``` penticton_weather_data_v1.csv ``` used this for some reason in the interactive plot in ./viz so I decided to keep it instead of dealing with it :)
+* ```/hardiness_carls_model``` contains the data from Carl's hardiness model 
+* ```/hardiness_original``` contains the original files that are treated as immutable. Used to create ```model_train.csv```
+* ```targets.csv``` contains the target values for model training
 
 # ./viz
 * ``` weather_hardiness_interactive.py ``` interactive visualization for weather & hardiness. Could definitely be updated to make more useful. 
 * ```/hardiness``` contains plots of hardiness to visualize the data as a time series
 * ```/hardiness_delta``` same idea as ```/hardiness``` but the change in hardiness is visualized 
 * ```/final_presentation``` contains all the plots that were included for the final presentation of FRST 507c
-
-* Interesting Hardiness Comparisons:
-- Chardonnay, Merlot, Pinot Gris - 2014 vs 2018 
-- '' ,        '',       ''       - 2015 vs 2018
-- 2018 and 2017 are more similar though
 
 # ./bayesian
 * ```deacclimation.R``` Detailed visualizations of what the 'deacclimation' phase and the filter that determined it.
