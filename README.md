@@ -3,7 +3,7 @@
 
 # Description
 Predicting grapevine cold hardiness in the Okanagan Valley, BC using data from 2012 - 2018 from multiple sites and varieties. 
-Two modeling methods were used. The first was to train an SVR with a nonlinear 'rbf' kernel. The second method was to fit a linear Bayesian model. These two models did not have the same inputs or outputs. The SVR model predicted the absolute hardiness on a given day based on the maximum average temperature of the previous 14 days. The Bayesian model predicted the change in hardiness based on the change in Growing Degree Days over 5C (GDD5) from a sample at time, $$t$$, and the previous sample before that, $$t-1$$. 
+Two modeling methods were used. The first was to train an SVR with a nonlinear 'rbf' kernel. The second method was to fit a linear Bayesian model. These two models did not have the same inputs or outputs. The SVR model predicted the absolute hardiness on a given day based on the maximum average temperature of the previous 14 days. The Bayesian model predicted the change in hardiness based on the change in Growing Degree Days over 5C (GDD5) from a sample at time, *t*, and the previous sample before that, *t-1*. 
 
 # Directory Table of Contents
 
