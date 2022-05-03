@@ -21,8 +21,11 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC.
 * ``` penticton_weather_data_v1.csv ``` used this for some reason in the interactive plot in ./viz so I decided to keep it instead of dealing with it :)
 
 # ./viz
-* ``` correlations.py ``` creates the correlation plots between weather parameters and hardiness 
 * ``` weather_hardiness_interactive.py ``` interactive visualization for weather & hardiness. Could definitely be updated to make more useful. 
+* ```/hardiness``` contains plots of hardiness to visualize the data as a time series
+* ```/hardiness_delta``` same idea as ```/hardiness``` but the change in hardiness is visualized 
+* ```/final_presentation``` contains all the plots that were included for the final presentation of FRST 507c
+
 * Interesting Hardiness Comparisons:
 - Chardonnay, Merlot, Pinot Gris - 2014 vs 2018 
 - '' ,        '',       ''       - 2015 vs 2018
