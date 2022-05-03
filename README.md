@@ -45,12 +45,12 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC.
 * SVR_sauv_blanc_oliver_east.py
     - Same model and setup as the SVR file above, but this was trained and tested on data only from Oliver, East
 
-## SVR Results
-### Validation Years
+# SVR Results
+* Validation Years
 <img src="viz/ML_predictions/SVR_3.png" alt="climate_bc" width="800">
 <img src="viz/ML_predictions/SVR_6.png" alt="climate_bc" width="800">
 
-### Training Years
+* Training Years
 <img src="viz/ML_predictions/SVR_1.png" alt="climate_bc" width="800">
 <img src="viz/ML_predictions/SVR_2.png" alt="climate_bc" width="800">
 <img src="viz/ML_predictions/SVR_4.png" alt="climate_bc" width="800">
