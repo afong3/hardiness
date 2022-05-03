@@ -29,7 +29,9 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC.
 - 2018 and 2017 are more similar though
 
 # ./bayesian
-* Location for all future bayesian modeling
+* ```deacclimation.R``` Detailed visualizations of what the 'deacclimation' phase and the filter that determined it.
+* ```model_4.R``` Created a linear model using the change in GDD > 5 between two sample dates to predict the change in hardiness
+* ```simulation_gdd_hardiness_delta.R``` The accompanying simulation for ```model_4.R``` and it's real data.
 
 # ./ML
 
