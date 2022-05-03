@@ -3,13 +3,16 @@
 
 # Description
 Predicting grapevine cold hardiness in the Okanagan Valley, BC using data from 2012 - 2018 from multiple sites and varieties. 
+Two modeling methods were used. The first was to train an SVR with a nonlinear 'rbf' kernel. The second method was to fit a linear Bayesian model. These two models did not have the same inputs or outputs. The SVR model predicted the absolute hardiness on a given day based on the maximum average temperature of the previous 14 days. The Bayesian model predicted the change in hardiness based on the change in Growing Degree Days over 5C (GDD5) from a sample at time, $$t$$, and the previous sample before that, $$t-1$$. 
 
-# ./bayesian
+# Directory Table of Contents
+
+## ./bayesian
 * ```deacclimation.R``` Detailed visualizations of what the 'deacclimation' phase and the filter that determined it.
 * ```model_4.R``` Created a linear model using the change in GDD > 5 between two sample dates to predict the change in hardiness
 * ```simulation_gdd_hardiness_delta.R``` The accompanying simulation for ```model_4.R``` and it's real data.
 
-# ./ML
+## ./ML
 
 * SVR_sauv_blanc_all_sites.py
     - Trained SVR with an 'rbf' kernel
@@ -23,7 +26,7 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC using data from 2
 * SVR_sauv_blanc_oliver_east.py
     - Same model and setup as the SVR file above, but this was trained and tested on data only from Oliver, East
 
-# SVR Results
+## SVR Results
 * Validation Years
 <img src="viz/ML_predictions/SVR_3.png" alt="climate_bc" width="800">
 <img src="viz/ML_predictions/SVR_6.png" alt="climate_bc" width="800">
@@ -34,7 +37,7 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC using data from 2
 <img src="viz/ML_predictions/SVR_4.png" alt="climate_bc" width="800">
 <img src="viz/ML_predictions/SVR_7.png" alt="climate_bc" width="800">
 
-# ./scripts
+## ./scripts
 * Stores all the python scripts which clean, manipulate, alter data in any form.
 * Generally saves the data manipulations into ./data
 * ```hardiness_cleaning_X.py``` run them in order to get the 'immutable' cleaned hardiness file
@@ -42,7 +45,7 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC using data from 2
 * ```weather_manipulation.py``` summarizes data between sample dates into one statistic for each metric if any new inputs or parameters want to be tested, do it in here
 * ```weather_manipulation_validation.png``` Did one set of the summary stats manually in excel to validate everything was working correctly. Probably doesn't need to be updated as this just proves the data_between_dates is working.
 
-# ./data
+## ./data
 * Data that was created from the ./scripts directory OR was inhereted by another source (cleaned Penticton weather)
 * ``` hardiness_cleaned.csv ``` should be treated as immutable. Do not write to this file unless tested well in the '/scripts/hardiness_cleaning_X.py' files
 * ``` model_train.csv ``` contains all the current weather parameters comparing to hardiness and the change in hardiness between timesteps
@@ -52,13 +55,13 @@ Predicting grapevine cold hardiness in the Okanagan Valley, BC using data from 2
 * ```/hardiness_original``` contains the original files that are treated as immutable. Used to create ```model_train.csv```
 * ```targets.csv``` contains the target values for model training
 
-# ./viz
+## ./viz
 * ``` weather_hardiness_interactive.py ``` interactive visualization for weather & hardiness. Could definitely be updated to make more useful. 
 * ```/hardiness``` contains plots of hardiness to visualize the data as a time series
 * ```/hardiness_delta``` same idea as ```/hardiness``` but the change in hardiness is visualized 
 * ```/final_presentation``` contains all the plots that were included for the final presentation of FRST 507c
 
-# Cleaning, Manipulation, etc. order
+## Cleaning, Manipulation, etc. order
 
 ### To follow manipulation techniques & considerations or make changes:
 I know it's still a bit spaghetty-y (??) but gotta have a trade off for dev time sometimes
@@ -66,8 +69,8 @@ I know it's still a bit spaghetty-y (??) but gotta have a trade off for dev time
 2. run 'scripts/weather_manipulation.py'
 3. run 'scripts/hardiness_manipulation.py'
 
-# Data Sources
-## Environment Canada
+## Data Sources
+* Environment Canada
 Instructions for getting Penticton Weather Station Data: https://drive.google.com/drive/folders/160ZGld_zZrqju29GFk2PVAerIeVxKotn
 
 Cygwin query: ``` for year in `seq 2012 2022`;do for month in `seq 1 1`;do wget --content-disposition "https://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=50269&Year=${year}&Month=${month}&Day=14&timeframe=2&submit= Download+Data" ;done;done ```
